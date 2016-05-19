@@ -12,25 +12,48 @@ import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
 
-data SampleHeader = SampleHeader { magicNumber   :: Word64    -- "IMPS"
+data SampleHeader = SampleHeader { magicNumber   :: Word32    -- "IMPS"
                                  , fileName      :: [Word8]   -- 12 bytes
                                  , spad0         :: Word8
                                  , globalVolume  :: Word8
                                  , flags         :: Word8
                                  , defaultVolume :: Word8
                                  , name          :: [Word8]   -- 26 bytes
-                                 -- TODO
+                                 , convert       :: Word16
+                                 , length        :: Word32
+                                 , loopBegin     :: Word32
+                                 , loopEnd       :: Word32
+                                 , c5Speed       :: Word32
+                                 , susLoopBegin  :: Word32
+                                 , susLoopEnd    :: Word32
+                                 , samplePointer :: Word32
+                                 , vibratoSpeed  :: Word8
+                                 , vibratoDepth  :: Word8
+                                 , vibratoRate   :: Word8
+                                 , vibratoType   :: Word8
+-- cache file:                   , fileSize      :: Word32
+--                               , date          :: Word16
+--                               , time          :: Word16
+--                               , format        :: Word8
+--
                        }
     deriving (Show, Eq)
 
 getSampleHeader :: Get SampleHeader
-getSampleHeader = SampleHeader <$> getWord64le <*> replicateM 12 getWord8
+getSampleHeader = SampleHeader <$> getWord32le <*> replicateM 12 getWord8
                                <*> getWord8 <*> getWord8 <*> getWord8
                                <*> getWord8 <*> replicateM 26 getWord8
-                               -- TODO
+                               <*> getWord16le <*> getWord32le <*> getWord32le
+                               <*> getWord32le <*> getWord32le <*> getWord32le
+                               <*> getWord32le <*> getWord32le <*> getWord8
+                               <*> getWord8 <*> getWord8 <*> getWord8
 
 putSampleHeader :: SampleHeader -> Put
 putSampleHeader SampleHeader{..} = do
-    putWord64le magicNumber
+    putWord32le magicNumber
     mapM_ putWord8 (fileName ++ [spad0, globalVolume, flags, defaultVolume] ++ name)
+    putWord16le convert
+    mapM_ putWord32le [ length, loopBegin, loopEnd, c5Speed, susLoopBegin, susLoopEnd, samplePointer,
+                      , vibratoSpeed, vibratoDepth, vibratoRate, vibratoType
+                      ]
 
