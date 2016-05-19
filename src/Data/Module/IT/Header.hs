@@ -13,7 +13,7 @@ import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
  
-data Header = Header { magicNumber    :: Word64     -- "IMPM" starting at v2.03
+data Header = Header { magicNumber    :: Word32     -- "IMPM" starting at v2.03
                      , songName       :: [Word8]    -- 26 bytes
                      , hpad0          :: [Word8]    -- 2 bytes
                      , ordNum         :: Word16     -- number of orders
@@ -47,7 +47,7 @@ data Header = Header { magicNumber    :: Word64     -- "IMPM" starting at v2.03
     deriving (Show, Eq)
 
 getHeader :: Get Header
-getHeader = Header <$> getWord64le
+getHeader = Header <$> getWord32le
                    <*> replicateM 26 getWord8
                    <*> replicateM 2 getWord8
                    <*> getWord16le
@@ -72,7 +72,7 @@ getHeader = Header <$> getWord64le
 
 putHeader :: Header -> Put
 putHeader Header{..} = do
-    putWord64le magicNumber
+    putWord32le magicNumber
     mapM_ putWord8 songName
     mapM_ putWord8 hpad0
     mapM_ putWord16le

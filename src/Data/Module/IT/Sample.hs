@@ -53,7 +53,6 @@ putSampleHeader SampleHeader{..} = do
     putWord32le magicNumber
     mapM_ putWord8 (fileName ++ [spad0, globalVolume, flags, defaultVolume] ++ name)
     putWord16le convert
-    mapM_ putWord32le [ length, loopBegin, loopEnd, c5Speed, susLoopBegin, susLoopEnd, samplePointer,
-                      , vibratoSpeed, vibratoDepth, vibratoRate, vibratoType
-                      ]
+    mapM_ putWord32le [ length, loopBegin, loopEnd, c5Speed, susLoopBegin, susLoopEnd, samplePointer ]
+    mapM_ putWord8    [ vibratoSpeed, vibratoDepth, vibratoRate, vibratoType ]
 

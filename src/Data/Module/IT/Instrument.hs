@@ -50,7 +50,7 @@ putEnvelope Envelope{..} = do
     mapM_ putNode nodes
     putWord8 epad0
     
-data Instrument = Instrument { magicNumber           :: Word64             -- "IMPI"
+data Instrument = Instrument { magicNumber           :: Word32             -- "IMPI"
                              , fileName              :: [Word8]            -- 12 bytes
                              , ipad0                 :: Word8
                              , newNoteAction         :: Word8
@@ -75,7 +75,7 @@ data Instrument = Instrument { magicNumber           :: Word64             -- "I
     deriving (Show, Eq)
 
 getInstrument :: Get Instrument
-getInstrument = Instrument <$> getWord64le <*> replicateM 12 getWord8 <*> getWord8
+getInstrument = Instrument <$> getWord32le <*> replicateM 12 getWord8 <*> getWord8
                            <*> getWord8 <*> getWord8 <*> getWord8 <*> getWord16le
                            <*> getWord8 <*> getWord8 <*> getWord8 <*> getWord8
                            <*> replicateM 2 getWord8 <*> getWord16le <*> getWord8
@@ -89,7 +89,7 @@ getNoteSampleTable = do
 
 putInstrument :: Instrument -> Put
 putInstrument Instrument{..} = do
-    putWord64le magicNumber
+    putWord32le magicNumber
     mapM_ putWord8 fileName
     mapM_ putWord8
           [ ipad0
