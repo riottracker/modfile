@@ -28,7 +28,7 @@ getModule = do
     header <- getHeader
     orders <- replicateM 256  getWord8
     patterns <- replicateM (fromIntegral (numPatterns header)) getPattern
-    instruments <- replicateM (fromIntegral (numInstruments)) getInstrument
+    instruments <- replicateM (fromIntegral (numInstruments header)) getInstrument
     return $ Module{..}
 
 putModule :: Module -> Put
@@ -36,5 +36,5 @@ putModule Module{..} = do
     putHeader header
     mapM_ putWord8 orders
     mapM_ putPattern patterns
-    mapM_ Instrument instruments
+    mapM_ putInstrument instruments
 

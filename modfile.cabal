@@ -16,10 +16,15 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Data.Module.IT,
-                       Data.Module.IT.Instrument
-                       Data.Module.IT.Pattern
-                       Data.Module.IT.Header
-                       Data.Module.IT.Sample
+                       Data.Module.IT.Instrument,
+                       Data.Module.IT.Pattern,
+                       Data.Module.IT.Header,
+                       Data.Module.IT.Sample,
+                       Data.Module.XM,
+                       Data.Module.XM.Instrument,
+                       Data.Module.XM.Pattern,
+                       Data.Module.XM.Header,
+                       Data.Module.XM.Sample
   build-depends:       base >= 4.7 && < 5
                      , binary
                      , split

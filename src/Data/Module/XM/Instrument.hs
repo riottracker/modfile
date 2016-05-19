@@ -31,8 +31,8 @@ getInstrument = Instrument <$> getWord64le <*> replicateM 22 getWord8
 
 putInstrument :: Instrument -> Put
 putInstrument Instrument{..} = do
-    putWord64le instrument
-    putM_ name
+    putWord64le instrumentSize
+    mapM_ putWord8 name
     putWord8 instrumentType
     putWord16le numSamples
 -- TODO
