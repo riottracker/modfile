@@ -10,7 +10,7 @@ maintainer:          kohlrabi@kohlra.biz
 copyright:           2016 kohlrabi
 category:            music
 build-type:          Simple
--- extra-source-files:
+extra-source-files:  examples/readIT.hs
 cabal-version:       >=1.10
 
 library
@@ -19,6 +19,7 @@ library
                        Data.Module.IT.Instrument
                        Data.Module.IT.Pattern
                        Data.Module.IT.Header
+                       Data.Module.IT.Sample
   build-depends:       base >= 4.7 && < 5
                      , binary
                      , split
