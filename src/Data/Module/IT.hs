@@ -12,7 +12,6 @@ import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
 
-import           Numeric (showHex)
 
 import Data.Module.IT.Header
 import Data.Module.IT.Instrument
@@ -24,11 +23,18 @@ data Module = Module { header         :: Header
                      , insOffsets     :: [Word32]
                      , smpOffsets     :: [Word32]
                      , patOffsets     :: [Word32]
---                     , instruments    :: [Instrument]
---                     , sampleHeaders  :: [SampleHeader]
---                     , patterns       :: [Pattern]
+                     , instruments    :: [Instrument]
+                     , sampleHeaders  :: [SampleHeader]
+                     , patterns       :: [Pattern]
                      }
     deriving (Show, Eq)
+
+getAtOffset :: Get a -> Word32 -> Get a
+getAtOffset f n = do
+    br <- bytesRead
+    _ <- skip $ (fromIntegral n) - (fromIntegral br)
+    x <- f
+    return $ x
 
 getModule :: Get Module
 getModule = do
@@ -37,9 +43,9 @@ getModule = do
     insOffsets <- replicateM (fromIntegral (insNum header)) getWord32le
     smpOffsets <- replicateM (fromIntegral (smpNum header)) getWord32le
     patOffsets <- replicateM (fromIntegral (patNum header)) getWord32le
---    instruments <- replicateM (fromIntegral (insNum header)) getInstrument
---    sampleHeaders <- replicateM (fromIntegral (smpNum header)) getSampleHeader
---    patterns <- replicateM (fromIntegral (patNum header)) getPattern
+    instruments <- mapM (getAtOffset getInstrument) insOffsets
+    sampleHeaders <- mapM (getAtOffset getSampleHeader) smpOffsets
+    patterns <- mapM (\x -> if x == 0 then getEmptyPattern else (getAtOffset getPattern x)) patOffsets
     return $ Module{..}
 
 putModule :: Module -> Put

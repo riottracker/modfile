@@ -3,6 +3,7 @@
 module Data.Module.IT.Pattern (
       Pattern (..)
     , getPattern
+    , getEmptyPattern
     , putPattern
     ) where
 
@@ -26,6 +27,9 @@ getPattern = do
     ppad0 <- replicateM 4 getWord8
     -- TODO
     return $ Pattern{..}
+
+getEmptyPattern :: Get Pattern
+getEmptyPattern = return $ Pattern 0 64 [0,0,0,0]
 
 putPattern :: Pattern -> Put
 putPattern Pattern{..} = do
