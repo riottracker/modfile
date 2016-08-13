@@ -2,6 +2,9 @@
 
 module Data.Module.IT.Pattern (
       Pattern (..)
+    , Cell (..)
+    , Command (..)
+    , emptyCell
     , getPattern
     , getEmptyPattern
     , putPattern
@@ -15,6 +18,7 @@ import           Data.Binary.Put
 import           Data.Bits
 import           Data.Maybe
 import           Data.Traversable
+
 
 data Command = Command { cmd :: Word8
                        , val :: Word8
@@ -95,7 +99,7 @@ getRow rowBuffer = do
             let channel = (chn - 1) .&. 63
             mask <- if testBit chn 7
                     then getWord8
-                    else pure (_mask (rowBuffer !! fromIntegral chn))
+                    else pure (_mask (rowBuffer !! fromIntegral channel))
             c <- getCell channel mask rowBuffer
             j <- getRow (if testBit chn 7
                          then replaceNth (fromIntegral channel) c rowBuffer

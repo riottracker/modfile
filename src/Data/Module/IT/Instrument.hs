@@ -14,6 +14,7 @@ import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.List.Split
+import           Data.Tuple
 
 data Envelope = Envelope { flag             :: Word8
                          , numNodes         :: Word8
@@ -27,10 +28,7 @@ data Envelope = Envelope { flag             :: Word8
     deriving (Show, Eq)
 
 getNode :: Get (Word16, Word8)
-getNode = do
-    y <- getWord8
-    x <- getWord16le
-    return (x, y)
+getNode = fmap swap (liftM2 (,) getWord8 getWord16le)
 
 getEnvelope :: Get Envelope
 getEnvelope = Envelope <$> getWord8 <*> getWord8 <*> getWord8
@@ -38,9 +36,7 @@ getEnvelope = Envelope <$> getWord8 <*> getWord8 <*> getWord8
                        <*> replicateM 25 getNode <*> getWord8
 
 putNode :: (Word16, Word8) -> Put
-putNode (a,b) = do
-    putWord16le a
-    putWord8 b
+putNode (a,b) = putWord16le a >> putWord8 b
 
 putEnvelope :: Envelope -> Put
 putEnvelope Envelope{..} = do
@@ -83,9 +79,8 @@ getInstrument = Instrument <$> getWord32le <*> replicateM 12 getWord8 <*> getWor
                            <*> getNoteSampleTable <*> getEnvelope <*> getEnvelope <*> getEnvelope
 
 getNoteSampleTable :: Get [(Word8, Word8)]
-getNoteSampleTable = do
-    d <- replicateM 240 getWord8
-    return $ map (\[a,b] -> (a,b)) (chunksOf 2 d)
+getNoteSampleTable = fmap (l2t . chunksOf 2) (replicateM 240 getWord8)
+  where l2t = map (\[a,b] -> (a,b))
 
 putInstrument :: Instrument -> Put
 putInstrument Instrument{..} = do
