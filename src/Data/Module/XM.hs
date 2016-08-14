@@ -26,7 +26,7 @@ data Module = Module { header      :: Header
 getModule :: Get Module
 getModule = do
     header <- getHeader
-    orders <- replicateM 256  getWord8
+    orders <- replicateM (fromIntegral (songLength header)) getWord8
     patterns <- replicateM (fromIntegral (numPatterns header)) getPattern
     instruments <- replicateM (fromIntegral (numInstruments header)) getInstrument
     return $ Module{..}

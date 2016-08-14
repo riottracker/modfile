@@ -59,7 +59,7 @@ data Instrument = Instrument { magicNumber           :: Word32             -- "I
                              , defaultPan            :: Word8
                              , ipad1                 :: [Word8]            -- 2 bytes
                              , version               :: Word16
-                             , numSamples            :: Word8
+                             , sampleNum             :: Word8
                              , ipad2                 :: Word8
                              , name                  :: [Word8]            -- 26 bytes
                              , ipad3                 :: [Word8]            -- 6 bytes
@@ -101,7 +101,7 @@ putInstrument Instrument{..} = do
           ]
     mapM_ putWord8 ipad1
     putWord16le version
-    mapM_ putWord8 ([numSamples, ipad2] ++ name ++ ipad3)
+    mapM_ putWord8 ([sampleNum, ipad2] ++ name ++ ipad3)
     mapM_ putWord8 (foldr (\(f,s) a -> f : s : a) [] noteSampleTable)
     mapM_ putEnvelope
           [ volumeEnvelope

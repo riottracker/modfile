@@ -19,14 +19,14 @@ data Header = Header { idText          :: [Word8]    -- 17 bytes: "Extended modu
                      , trackerName     :: [Word8]    -- 20 bytes
                      , version         :: Word16
                      , headerSize      :: Word64
-                     , patNum          :: Word16     -- number of patterns
+                     , songLength      :: Word16     -- number of patterns
                      , restartPosition :: Word16
                      , numChannels     :: Word16
                      , numPatterns     :: Word16
                      , numInstruments  :: Word16
                      , flags           :: Word16    -- bit 0: use linear freq. table
-                     , defaultTempo    :: Word16
-                     , defaultBPM      :: Word16
+                     , initialSpeed    :: Word16
+                     , initialTempo    :: Word16
                      }
     deriving (Show, Eq)
 
@@ -52,13 +52,13 @@ putHeader Header{..} = do
     putWord16le version
     putWord64le headerSize
     mapM_ putWord16le
-          [ patNum
+          [ songLength
           , restartPosition
           , numChannels
           , numPatterns
           , numInstruments
           , flags
-          , defaultTempo
-          , defaultBPM
+          , initialSpeed
+          , initialTempo
           ]
 

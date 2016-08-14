@@ -18,7 +18,7 @@ import           Data.Binary.Put
 data Instrument = Instrument { instrumentSize :: Word64
                              , name           :: [Word8]    -- 22 bytes
                              , instrumentType :: Word8
-                             , numSamples     :: Word16
+                             , sampleNum      :: Word16
 -- if numSamples > 0
 -- TODO
                              }
@@ -34,6 +34,6 @@ putInstrument Instrument{..} = do
     putWord64le instrumentSize
     mapM_ putWord8 name
     putWord8 instrumentType
-    putWord16le numSamples
+    putWord16le sampleNum
 -- TODO
 

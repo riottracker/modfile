@@ -16,10 +16,10 @@ import           Data.Binary.Put
 data Header = Header { magicNumber    :: Word32     -- "IMPM" starting at v2.03
                      , songName       :: [Word8]    -- 26 bytes
                      , hpad0          :: [Word8]    -- 2 bytes
-                     , ordNum         :: Word16     -- number of orders
-                     , insNum         :: Word16     -- number of instruments
-                     , smpNum         :: Word16     -- number of samples
-                     , patNum         :: Word16     -- number of patterns
+                     , songLength     :: Word16     -- number of orders
+                     , numInstruments :: Word16     -- number of instruments
+                     , numSamples     :: Word16     -- number of samples
+                     , numPatterns    :: Word16     -- number of patterns
                      , createdWith    :: Word16
                      , compatibleWith :: Word16
                      , flags          :: Word16     -- bit 0: stereo/mono
@@ -76,10 +76,10 @@ putHeader Header{..} = do
     mapM_ putWord8 songName
     mapM_ putWord8 hpad0
     mapM_ putWord16le
-          [ ordNum
-          , insNum
-          , smpNum
-          , patNum
+          [ songLength
+          , numInstruments
+          , numSamples
+          , numPatterns
           , createdWith
           , compatibleWith
           , flags

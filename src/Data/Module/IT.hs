@@ -35,10 +35,10 @@ getAtOffset f n = (>> f) . skip . (-) (fromIntegral n) . fromIntegral =<< bytesR
 getModule :: Get Module
 getModule = do
     header <- getHeader
-    orders <- replicateM (fromIntegral (ordNum header)) getWord8
-    insOffsets <- replicateM (fromIntegral (insNum header)) getWord32le
-    smpOffsets <- replicateM (fromIntegral (smpNum header)) getWord32le
-    patOffsets <- replicateM (fromIntegral (patNum header)) getWord32le
+    orders <- replicateM (fromIntegral (songLength header)) getWord8
+    insOffsets <- replicateM (fromIntegral (numInstruments header)) getWord32le
+    smpOffsets <- replicateM (fromIntegral (numSamples header)) getWord32le
+    patOffsets <- replicateM (fromIntegral (numPatterns header)) getWord32le
     instruments <- mapM (getAtOffset getInstrument) insOffsets
     sampleHeaders <- mapM (getAtOffset getSampleHeader) smpOffsets
     patterns <- sequence [ if x == 0
