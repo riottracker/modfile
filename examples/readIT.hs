@@ -22,10 +22,10 @@ pprintHeader :: Header -> IO ()
 pprintHeader Header{..} = do
     putStr "Song name....: "
     BL.putStrLn $ BL.pack songName
-    putStrLn $ "Orders.......: " ++ show ordNum
-    putStrLn $ "Instruments..: " ++ show insNum
-    putStrLn $ "Samples......: " ++ show smpNum
-    putStrLn $ "Patterns.....: " ++ show patNum
+    putStrLn $ "Orders.......: " ++ show songLength
+    putStrLn $ "Instruments..: " ++ show numInstruments
+    putStrLn $ "Samples......: " ++ show numSamples
+    putStrLn $ "Patterns.....: " ++ show numPatterns
     putStrLn $ "Global volume: " ++ show globalVolume
     putStrLn $ "Mix volume...: " ++ show mixVolume
     putStrLn $ "Initial speed: " ++ show initialSpeed
