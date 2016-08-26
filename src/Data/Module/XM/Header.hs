@@ -18,7 +18,7 @@ data Header = Header { idText          :: [Word8]    -- 17 bytes: "Extended modu
                      , hpad0           :: Word8
                      , trackerName     :: [Word8]    -- 20 bytes
                      , version         :: Word16
-                     , headerSize      :: Word64
+                     , headerSize      :: Word32
                      , songLength      :: Word16     -- number of patterns
                      , restartPosition :: Word16
                      , numChannels     :: Word16
@@ -31,13 +31,13 @@ data Header = Header { idText          :: [Word8]    -- 17 bytes: "Extended modu
     deriving (Show, Eq)
 
 getHeader :: Get Header
-getHeader = Header <$> replicateM 17 getWord8
+getHeader = Header <$> replicateM 17 getWord8 
                    <*> replicateM 20 getWord8
                    <*> getWord8
                    <*> replicateM 20 getWord8
                    <*> getWord16le
-                   <*> getWord64le
-                   <*> getWord16le
+                   <*> getWord32le
+                   <*> getWord16le           
                    <*> getWord16le
                    <*> getWord16le
                    <*> getWord16le
@@ -50,7 +50,7 @@ putHeader :: Header -> Put
 putHeader Header{..} = do
     mapM_ putWord8 (idText ++ songName ++ [hpad0] ++ trackerName)
     putWord16le version
-    putWord64le headerSize
+    putWord32le headerSize
     mapM_ putWord16le
           [ songLength
           , restartPosition
