@@ -15,7 +15,7 @@ import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
 
-data Instrument = Instrument { instrumentSize :: Word64
+data Instrument = Instrument { instrumentSize :: Word32
                              , name           :: [Word8]    -- 22 bytes
                              , instrumentType :: Word8
                              , sampleNum      :: Word16
@@ -25,13 +25,13 @@ data Instrument = Instrument { instrumentSize :: Word64
     deriving (Show, Eq)
 
 getInstrument :: Get Instrument
-getInstrument = Instrument <$> getWord64le <*> replicateM 22 getWord8
+getInstrument = Instrument <$> getWord32le <*> replicateM 22 getWord8
                            <*> getWord8 <*> getWord16le
 -- TODO
 
 putInstrument :: Instrument -> Put
 putInstrument Instrument{..} = do
-    putWord64le instrumentSize
+    putWord32le instrumentSize
     mapM_ putWord8 name
     putWord8 instrumentType
     putWord16le sampleNum

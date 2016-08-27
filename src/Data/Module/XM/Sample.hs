@@ -13,9 +13,9 @@ import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
 
-data SampleHeader = SampleHeader { sampleLength   :: Word64
-                                 , loopStart      :: Word64
-                                 , loopLength     :: Word64
+data SampleHeader = SampleHeader { sampleLength   :: Word32
+                                 , loopStart      :: Word32
+                                 , loopLength     :: Word32
                                  , volume         :: Word8
                                  , finetune       :: Word8
                                  , sampleType     :: Word8
@@ -32,14 +32,14 @@ data Sample = Sample { sampleHeader :: SampleHeader
                  deriving (Show, Eq)
 
 getSampleHeader :: Get SampleHeader
-getSampleHeader = SampleHeader <$> getWord64le <*> getWord64le <*> getWord64le
+getSampleHeader = SampleHeader <$> getWord32le <*> getWord32le <*> getWord32le
                                <*> getWord8 <*> getWord8 <*> getWord8
                                <*> getWord8 <*> getWord8 <*> getWord8
                                <*> replicateM 22 getWord8
 
 putSampleHeader :: SampleHeader -> Put
 putSampleHeader SampleHeader{..} = do
-    mapM_ putWord64le [sampleLength, loopStart, loopLength]
+    mapM_ putWord32le [sampleLength, loopStart, loopLength]
     mapM_ putWord8 [volume, finetune, sampleType, panning, relativeNote, reserved]
     mapM_ putWord8 name
 
