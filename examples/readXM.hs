@@ -41,16 +41,18 @@ pprintPattern Pattern{..} = do
 main :: IO ()
 main = do
     file <- BL.getContents
-    let it = runGet getModule file
+    let xm = runGet getModule file
     putStrLn "Header:"
     putStrLn "======="
-    pprintHeader $ header it
+    pprintHeader $ header xm
+    putStrLn "<>"
+    print (orders xm)
     putStrLn "<>"
     putStrLn "Instruments:"
     putStrLn "============"
-    mapM_ pprintInstrument (instruments it)
+    mapM_ pprintInstrument (instruments xm)
     putStrLn "<>"
     putStrLn "Patterns:"
     putStrLn "========="
-    mapM_ pprintPattern (patterns it)
+    mapM_ pprintPattern (patterns xm)
     putStrLn "<>"
