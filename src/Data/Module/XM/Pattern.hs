@@ -14,10 +14,10 @@ import           Data.Binary.Put
 import           Data.List.Split
 
 -- TODO: implement compression
-data Pattern = Pattern { headerLength  :: Word64
+data Pattern = Pattern { headerLength  :: Word32
                        , packingType   :: Word8
-                       , numRows       :: Word32
-                       , packedSize    :: Word32
+                       , numRows       :: Word16
+                       , packedSize    :: Word16
                        , patternData   :: [(Word8, Word8, Word8, Word8, Word8)]
                        -- (note, instrument, volume, effect type, effect param)
                        }
@@ -30,17 +30,17 @@ getPatternData size = do
 
 getPattern :: Get Pattern
 getPattern = do
-    headerLength <- getWord64le
+    headerLength <- getWord32le
     packingType <- getWord8
-    numRows <- getWord32le
-    packedSize <- getWord32le
+    numRows <- getWord16le
+    packedSize <- getWord16le
     patternData <- getPatternData $ fromIntegral packedSize 
     return Pattern{..}
 
 putPattern :: Pattern -> Put
 putPattern Pattern{..} = do
-    putWord64le headerLength
+    putWord32le headerLength
     putWord8 packingType
-    mapM_ putWord32le [numRows, packedSize]
+    mapM_ putWord16le [numRows, packedSize]
     mapM_ putWord8 (foldr (\(a,b,c,d,e) f -> a : b : c : d : e : f) [] patternData)
 
