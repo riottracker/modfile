@@ -9,18 +9,11 @@ module Data.Module.MOD.Header (
 import Control.Applicative
 import Control.Monad
 import Data.Word
+import Data.Module.MOD.Sample
 
-data SampleDesc = SampleDesc { sampleName   :: [Word8] -- 22 bytes, zeroe-padded
-                             , halfSampleLength :: Word32  -- 
-                             , finetune :: Word8 -- finetune byte, only the lower nibble is considered
-                             , sampleVol :: Word8
-                             , halfLoopStart :: Word16
-                             , halfLoopLength :: Word16
-                             }
-
-data Header = Header { songName   :: [Word8] -- 20 bytes, space- or zero-padded
-                     , sampleInfo :: [SampleDesc] -- traditionally 15 samples, but mostly 31.
-                     , songLength :: Word8 -- Song length in patterns (up to 128)
+data Header = Header { songName    :: [Word8] -- 20 bytes, space- or zero-padded
+                     , sampleDescs :: [SampleDesc] -- traditionally 15 samples, but mostly 31.
+                     , songLength  :: Word8 -- Song length in patterns (up to 128)
                      , restartByte :: Word8 -- Dunno about this
                      -- 128 bytes, each normally contains numbers between 0 and 63.
                      , orderList   :: [Word8] 
@@ -29,19 +22,6 @@ data Header = Header { songName   :: [Word8] -- 20 bytes, space- or zero-padded
                      , idLetters   :: Maybe Word32 
                      }
     deriving (Show, Eq)
-
--- This is some serious Kohlrabi Magic here, stolen from IT.hs. Dunno if I can
--- use it as is.
-getAtOffset :: Get a -> Word32 -> Get a
-getAtOffset f n = (>> f) . skip . (-) (fromIntegral n) . fromIntegral =<< bytesRead
-
-getSampleDesc :: Get SampleDesc
-getSampleDesc = SampleDesc <$> geplicateM 22 getWord8
-                           <*> getWord32le
-                           <*> getWord8
-                           <*> getWord8
-                           <*> getWord16le
-                           <*> getWord16le
 
 getHeader :: Get Header
 getHeader = Header <$> replicateM 20 getWord8
