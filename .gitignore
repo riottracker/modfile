@@ -18,6 +18,3 @@ cabal.sandbox.config
 .stack-work/
 cabal.project.local
 *.un~
-*.it
-*.mod
-*.xm
