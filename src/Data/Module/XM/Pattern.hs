@@ -22,7 +22,7 @@ data Pattern = Pattern { headerLength  :: Word32
                        , numRows       :: Word16
                        , packedSize    :: Word16
                        , patternData   :: [(Word8, Word8, Word8, Word8, Word8)]
-                       -- (note, instrument, volume, effect type, effect param)
+                         -- ^ (note, instrument, volume, effect type, effect param)
                        }
                    deriving (Show, Eq)
 
