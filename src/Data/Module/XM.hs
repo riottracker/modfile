@@ -12,6 +12,7 @@ import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
 
+
 import Data.Module.XM.Header
 import Data.Module.XM.Pattern
 import Data.Module.XM.Instrument
@@ -27,6 +28,8 @@ getModule :: Get Module
 getModule = do
     header <- getHeader
     orders <- replicateM (fromIntegral (songLength header)) getWord8
+    br <- bytesRead
+    skip $ (60 + (fromIntegral (headerSize header))) - (fromIntegral br) 
     patterns <- replicateM (fromIntegral (numPatterns header)) getPattern
     instruments <- replicateM (fromIntegral (numInstruments header)) getInstrument
     return $ Module{..}

@@ -15,8 +15,8 @@ import qualified Data.ByteString.Lazy      as BL
 
 pprintInstrument :: Instrument -> IO ()
 pprintInstrument Instrument{..} = do
-    putStr $ "(" ++ show sampleNum ++ "): "
-    BL.putStrLn $ BL.pack name
+    BL.putStr $ BL.pack instrumentName
+    putStrLn $ " (" ++ show sampleNum ++ ")"
 
 pprintHeader :: Header -> IO ()
 pprintHeader Header{..} = do
