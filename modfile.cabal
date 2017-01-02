@@ -10,7 +10,7 @@ maintainer:          kohlrabi@kohlra.biz
 copyright:           2016 kohlrabi
 category:            music
 build-type:          Simple
-extra-source-files:  examples/readIT.hs, example/readXM.hs
+extra-source-files:  examples/readIT.hs, examples/readXM.hs
 cabal-version:       >=1.10
 
 library
