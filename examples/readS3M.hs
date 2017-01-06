@@ -32,4 +32,6 @@ main = do
     putStrLn "======="
     pprintHeader $ header s3m
     putStrLn "<>"
+    print (orders s3m)
+    putStrLn "<>"
 
