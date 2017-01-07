@@ -30,6 +30,7 @@ library
                      , Data.Module.S3M.Instrument
                      , Data.Module.S3M.Instrument.PCM
                      , Data.Module.S3M.Instrument.Adlib
+                     , Data.Module.S3M.Pattern
   build-depends:       base >= 4.7 && < 5
                      , binary
                      , split

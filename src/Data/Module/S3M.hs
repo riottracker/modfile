@@ -37,3 +37,4 @@ putModule Module{..} = do
     mapM_ putWord8 orders
     mapM_ putWord16le insOffsets
     mapM_ putWord16le patOffsets
+
