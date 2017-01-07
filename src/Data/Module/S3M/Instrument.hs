@@ -19,7 +19,7 @@ import           Data.Module.S3M.Instrument.Adlib
 data Instrument = Instrument { instrumentType :: Word8     -- 0: empty, 1: PCM, 2: adlib melody instrument, 3-7: adlib percussion instrument
                              , filename       :: [Word8]   -- 12 bytes 
                              , pcmHeader      :: Maybe PCMHeader
---                             , adlibHeader    :: Maybe AdlibHeader
+                             , adlibSample    :: Maybe AdlibSample
                              }
     deriving (Show, Eq)
 
