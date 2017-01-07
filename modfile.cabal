@@ -27,6 +27,9 @@ library
                      , Data.Module.XM.Sample
                      , Data.Module.S3M
                      , Data.Module.S3M.Header
+                     , Data.Module.S3M.Instrument
+                     , Data.Module.S3M.Instrument.PCM
+                     , Data.Module.S3M.Instrument.Adlib
   build-depends:       base >= 4.7 && < 5
                      , binary
                      , split
