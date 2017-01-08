@@ -1,0 +1,83 @@
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE LambdaCase      #-}
+
+module Data.Module.S3M.Pattern (
+      Pattern (..)
+    , getPattern
+    , putPattern
+    ) where
+
+import           Control.Applicative ((<$>))
+import           Control.Monad
+import           Data.Binary
+import           Data.Word
+import           Data.Bits
+import           Data.Binary.Get
+import           Data.Binary.Put
+import           Data.Maybe
+
+data Cell = Cell { mask       :: Word8
+                 , note       :: Maybe Word8
+                 , instrument :: Maybe Word8
+                 , volume     :: Maybe Word8
+                 , command    :: Maybe Command
+                 }
+    deriving (Show, Eq)
+
+channel :: Cell -> Word8
+channel = flip (foldl clearBit . mask) [5..7]
+
+data Pattern = Pattern { packedLength  :: Word16
+                       , rows          :: [[Cell]]
+                       }
+                   deriving (Show, Eq)
+
+data Command = Command { cmd :: Word8
+                       , val :: Word8
+                       }
+    deriving (Show, Eq)
+
+getCommand :: Get Command
+getCommand = Command <$> getWord8 <*> getWord8
+
+putCommand :: Command -> Put
+putCommand Command{..} =
+    putWord8 cmd >> putWord8 val
+
+emptyCell :: Cell
+emptyCell = Cell 0 Nothing Nothing Nothing Nothing
+
+getCell :: Get (Maybe Cell)
+getCell = getWord8 >>=
+    \mask ->
+      if mask == 0 then
+          return Nothing
+      else do
+        let getByMask b f = sequence $ if testBit mask b then Just f else Nothing
+        n <- getByMask 5 getWord8
+        i <- getByMask 5 getWord8
+        v <- getByMask 6 getWord8
+        c <- getByMask 7 getCommand
+        return $ Just (Cell mask n i v c)
+
+getPattern :: Get Pattern
+getPattern = do
+    br0 <- bytesRead
+    packedLength <- getWord16le
+    let getToLimit lst = bytesRead >>=
+            \br1 -> if (br1 - br0) < fromIntegral packedLength then
+                        getToLimit . (lst ++) . pure =<< getRow
+                    else pure lst
+    rows <- getToLimit []
+    return Pattern{..}
+
+getRow :: Get [Cell]
+getRow = g []
+  where
+    g l = getCell >>= \case
+            Just x -> g $ l ++ [x]
+            Nothing -> return l
+
+putPattern :: Pattern -> Put
+putPattern _ = fail "not implemented"
+
