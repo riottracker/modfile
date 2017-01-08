@@ -2,12 +2,18 @@
 
 module Data.Module.MOD.Sample (
     Sample (..)
-    SampleDesc (..)
+    , SampleRec (..)
+    , getSampleRec
     , getSample
     , putSample
     ) where
 
-data SampleDesc = SampleDesc { sampleName :: [Word8] -- 22 bytes, zero-padded
+import Control.Applicative
+import Control.Monad
+import Data.Word
+import Data.Binary.Get
+
+data SampleRec = SampleRec { sampleName :: [Word8] -- 22 bytes, zero-padded
                              , halfSampleLength :: Word32 -- signed integer maybe?
                              , finetune :: Word8 -- finetune byte, only lower nibble used
                              , sampleVol :: Word8
@@ -17,19 +23,18 @@ data SampleDesc = SampleDesc { sampleName :: [Word8] -- 22 bytes, zero-padded
 
 type SampleData = [Word8]
 
-data Sample = Sample { desc SampleDesc
-                     , data SampleData
+data Sample = Sample { desc  ::  SampleRec
+                     , sdata :: SampleData
                      }
 
+getSampleRec :: Get SampleRec
+getSampleRec = SampleRec <$> replicateM 22 getWord8
+                         <*> getWord32le
+                         <*> getWord8
+                         <*> getWord8
+                         <*> getWord16le
+                         <*> getWord16le
 
-getSampleDesc :: Get SampleDesc
-getSampleDesc = SampleDesc <$> replicateM 22 getWord8
-                           <*> getWord32le
-                           <*> getWord8
-                           <*> getWord8
-                           <*> getWord16le
-                           <*> getWord16le
-
-getSampleData :: SampleDesc -> Get SampleData
-getSampleData d =  -- TODO: read length words of signed 8-bit integers
-    where length = (halfSampleLength d) * 2 -- dunno
+-- getSampleData :: SampleRec -> Get SampleData
+-- getSampleData d =  -- TODO: read length words of signed 8-bit integers
+    -- where length = (halfSampleLength d) * 2 -- dunno
