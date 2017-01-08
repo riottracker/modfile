@@ -8,13 +8,16 @@ module Data.Module.S3M (
 
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
+import           Data.Word
 
 import           Data.Module.S3M.Header
 import           Data.Module.S3M.Instrument
 import           Data.Module.S3M.Pattern
+
+import           Util
+
 
 data Module = Module { header      :: Header
                      , orders      :: [Word8]
@@ -26,8 +29,6 @@ data Module = Module { header      :: Header
                      }
     deriving (Show, Eq)
 
-getAtOffset :: Get a -> Word16 -> Get a
-getAtOffset f n = lookAhead $ (>> f) . skip . (-) (fromIntegral n) . fromIntegral =<< bytesRead
 
 getModule :: Get Module
 getModule = do
@@ -37,7 +38,7 @@ getModule = do
     patOffsets <- replicateM (fromIntegral (numPatterns header)) getWord16le
     instruments <- mapM (getAtOffset getInstrument) insOffsets
     patterns <- mapM (getAtOffset getPattern) patOffsets
-    return $ Module{..}
+    return Module{..}
 
 putModule :: Module -> Put
 putModule Module{..} = do

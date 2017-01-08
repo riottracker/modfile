@@ -8,15 +8,17 @@ module Data.Module.IT (
 
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
-
+import           Data.Word
 
 import           Data.Module.IT.Header
 import           Data.Module.IT.Instrument
-import           Data.Module.IT.Sample
 import           Data.Module.IT.Pattern
+import           Data.Module.IT.Sample
+
+import           Util
+
 
 data Module = Module { header        :: Header
                      , orders        :: [Word8]
@@ -29,8 +31,6 @@ data Module = Module { header        :: Header
                      }
     deriving (Show, Eq)
 
-getAtOffset :: Get a -> Word32 -> Get a
-getAtOffset f n = (>> f) . skip . (-) (fromIntegral n) . fromIntegral =<< bytesRead
 
 getModule :: Get Module
 getModule = do

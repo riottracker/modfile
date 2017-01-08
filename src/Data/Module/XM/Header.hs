@@ -9,9 +9,10 @@ module Data.Module.XM.Header (
 import           Control.Applicative
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
+import           Data.Word
+
  
 data Header = Header { idText          :: [Word8]    -- 17 bytes: "Extended module: "
                      , songName        :: [Word8]    -- 20 bytes

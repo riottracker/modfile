@@ -10,11 +10,12 @@ module Data.Module.XM.Pattern (
 import           Control.Applicative ((<$>))
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.List.Split
 import           Data.Maybe (fromJust, isJust)
+import           Data.Word
+
 
 -- TODO: implement compression
 data Pattern = Pattern { headerLength  :: Word32

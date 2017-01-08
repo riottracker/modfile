@@ -3,15 +3,14 @@
 module Main (main) where
 
 import           Control.Monad
+import           Data.Binary.Get
+import qualified Data.ByteString.Lazy as BL
 
 import           Data.Module.IT
-import           Data.Module.IT.Instrument
 import           Data.Module.IT.Header
+import           Data.Module.IT.Instrument
 import           Data.Module.IT.Pattern
 
-import           Data.Binary.Get
-
-import qualified Data.ByteString.Lazy      as BL
 
 pprintInstrument :: Instrument -> IO ()
 pprintInstrument Instrument{..} = do

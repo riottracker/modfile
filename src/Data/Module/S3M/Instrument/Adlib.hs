@@ -6,10 +6,11 @@ module Data.Module.S3M.Instrument.Adlib (
     , putAdlibSample
     ) where
 
+import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
-import           Control.Monad
+
 
 data AdlibSample = AdlibSample { reserved0 :: [Word8] -- 3 bytes
                                , oplValues :: [Word8] -- 12 bytes

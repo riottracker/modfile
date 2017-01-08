@@ -27,25 +27,6 @@ data Envelope = Envelope { flag             :: Word8
                          }
     deriving (Show, Eq)
 
-getNode :: Get (Word16, Word8)
-getNode = fmap swap (liftM2 (,) getWord8 getWord16le)
-
-getEnvelope :: Get Envelope
-getEnvelope = Envelope <$> getWord8 <*> getWord8 <*> getWord8
-                       <*> getWord8 <*> getWord8 <*> getWord8
-                       <*> replicateM 25 getNode <*> getWord8
-
-putNode :: (Word16, Word8) -> Put
-putNode (a,b) = putWord16le a >> putWord8 b
-
-putEnvelope :: Envelope -> Put
-putEnvelope Envelope{..} = do
-    mapM_ putWord8 [ flag, numNodes, loopStart, loopEnd
-                   , sustainLoopStart, sustainLoopEnd
-                   ]
-    mapM_ putNode nodes
-    putWord8 epad0
-    
 data Instrument = Instrument { magicNumber           :: Word32             -- "IMPI"
                              , fileName              :: [Word8]            -- 12 bytes
                              , ipad0                 :: Word8
@@ -69,6 +50,26 @@ data Instrument = Instrument { magicNumber           :: Word32             -- "I
                              , pitchEnvelope         :: Envelope
                              }
     deriving (Show, Eq)
+
+
+getNode :: Get (Word16, Word8)
+getNode = fmap swap (liftM2 (,) getWord8 getWord16le)
+
+getEnvelope :: Get Envelope
+getEnvelope = Envelope <$> getWord8 <*> getWord8 <*> getWord8
+                       <*> getWord8 <*> getWord8 <*> getWord8
+                       <*> replicateM 25 getNode <*> getWord8
+
+putNode :: (Word16, Word8) -> Put
+putNode (a,b) = putWord16le a >> putWord8 b
+
+putEnvelope :: Envelope -> Put
+putEnvelope Envelope{..} = do
+    mapM_ putWord8 [ flag, numNodes, loopStart, loopEnd
+                   , sustainLoopStart, sustainLoopEnd
+                   ]
+    mapM_ putNode nodes
+    putWord8 epad0
 
 getInstrument :: Get Instrument
 getInstrument = Instrument <$> getWord32le <*> replicateM 12 getWord8 <*> getWord8

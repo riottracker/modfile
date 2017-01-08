@@ -9,9 +9,10 @@ module Data.Module.XM.Sample (
 
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
+import           Data.Word
+
 
 data SampleHeader = SampleHeader { sampleLength   :: Word32
                                  , loopStart      :: Word32

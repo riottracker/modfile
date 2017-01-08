@@ -8,14 +8,14 @@ module Data.Module.XM (
 
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
+import           Data.Word
 
+import           Data.Module.XM.Header
+import           Data.Module.XM.Instrument
+import           Data.Module.XM.Pattern
 
-import Data.Module.XM.Header
-import Data.Module.XM.Pattern
-import Data.Module.XM.Instrument
 
 data Module = Module { header      :: Header
                      , orders      :: [Word8]
@@ -29,10 +29,10 @@ getModule = do
     header <- getHeader
     orders <- replicateM (fromIntegral (songLength header)) getWord8
     br <- bytesRead
-    skip $ (60 + (fromIntegral (headerSize header))) - (fromIntegral br) 
+    skip $  60 + fromIntegral (headerSize header) - fromIntegral br
     patterns <- replicateM (fromIntegral (numPatterns header)) getPattern
     instruments <- replicateM (fromIntegral (numInstruments header)) getInstrument
-    return $ Module{..}
+    return Module{..}
 
 putModule :: Module -> Put
 putModule Module{..} = do

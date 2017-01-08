@@ -9,10 +9,11 @@ module Data.Module.S3M.Instrument.PCM (
 import           Control.Applicative
 import           Control.Monad
 import           Data.Binary
-import           Data.Bits
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
+import           Data.Bits
+import           Data.Word
+
 
 data PCMSample = PCMSample { ptrDataH     :: Word8
                            , ptrDataL     :: Word16

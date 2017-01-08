@@ -2,18 +2,20 @@
 
 module Data.Module.XM.Instrument (
       Instrument (..)
+    , ExtendedInstrumentHeader (..)
     , getInstrument
     , putInstrument
     ) where
 
-import           Data.Module.XM.Sample
-
 import           Control.Applicative
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
+import           Data.Word
+
+import           Data.Module.XM.Sample
+
 
 data Instrument = Instrument { instrumentSize :: Word32
                              , instrumentName :: [Word8]    -- 22 bytes

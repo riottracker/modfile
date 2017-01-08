@@ -3,6 +3,8 @@
 
 module Data.Module.S3M.Pattern (
       Pattern (..)
+    , Command (..)
+    , Cell (..)
     , getPattern
     , putPattern
     ) where
@@ -10,11 +12,11 @@ module Data.Module.S3M.Pattern (
 import           Control.Applicative ((<$>))
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
-import           Data.Bits
 import           Data.Binary.Get
 import           Data.Binary.Put
+import           Data.Bits
 import           Data.Maybe
+import           Data.Word
 
 data Cell = Cell { mask       :: Word8
                  , note       :: Maybe Word8
