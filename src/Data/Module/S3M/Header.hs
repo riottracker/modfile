@@ -17,12 +17,12 @@ data Header = Header { songName        :: [Word8]    -- 28 bytes
                      , hpad0           :: Word8
                      , magicByte       :: Word8      -- should be 0x10 for scream tracker 3 modules
                      , hpad1           :: Word16
-                     , numOrders       :: Word8
-                     , numInstruments  :: Word8
-                     , numPatterns     :: Word8
-                     , flags           :: Word8
-                     , trackerVersion  :: Word8
-                     , format          :: Word8
+                     , numOrders       :: Word16
+                     , numInstruments  :: Word16
+                     , numPatterns     :: Word16
+                     , flags           :: Word16
+                     , trackerVersion  :: Word16
+                     , format          :: Word16
                      , magicString     :: Word32     -- "SCRM"
                      , globalVolume    :: Word8
                      , initialSpeed    :: Word8
@@ -41,12 +41,12 @@ getHeader = Header <$> replicateM 28 getWord8
                    <*> getWord8
                    <*> getWord8
                    <*> getWord16le
-                   <*> getWord8
-                   <*> getWord8
-                   <*> getWord8           
-                   <*> getWord8
-                   <*> getWord8
-                   <*> getWord8
+                   <*> getWord16le
+                   <*> getWord16le
+                   <*> getWord16le
+                   <*> getWord16le
+                   <*> getWord16le
+                   <*> getWord16le
                    <*> getWord32le
                    <*> getWord8
                    <*> getWord8
@@ -61,9 +61,9 @@ getHeader = Header <$> replicateM 28 getWord8
 putHeader :: Header -> Put
 putHeader Header{..} = do
     mapM_ putWord8 (songName ++ [hpad0, magicByte])
-    putWord16le hpad1
-    mapM_ putWord8
-          [ numOrders
+    mapM_ putWord16le
+          [ hpad1
+          , numOrders
           , numInstruments
           , numPatterns
           , flags

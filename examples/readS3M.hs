@@ -3,9 +3,12 @@
 module Main (main) where
 
 import           Control.Monad
+import           Data.Maybe
 
 import           Data.Module.S3M
 import           Data.Module.S3M.Instrument
+import           Data.Module.S3M.Instrument.PCM
+import           Data.Module.S3M.Instrument.Adlib
 import           Data.Module.S3M.Header
 import           Data.Module.S3M.Pattern
 
@@ -16,6 +19,19 @@ import qualified Data.ByteString.Lazy      as BL
 pprintInstrument :: Instrument -> IO ()
 pprintInstrument Instrument{..} = do
     BL.putStr $ BL.pack filename
+    when (isJust pcmSample) $ pprintPCMSample (fromJust pcmSample)
+    when (isJust adlibSample) $ pprintAdlibSample (fromJust adlibSample)
+    putStrLn "<>"
+
+pprintAdlibSample :: AdlibSample -> IO ()
+pprintAdlibSample AdlibSample{..} = do
+    putStrLn "Adlib: "
+    BL.putStrLn $ BL.pack title
+
+pprintPCMSample :: PCMSample -> IO ()
+pprintPCMSample PCMSample{..} = do
+   putStrLn "PCM: "
+   BL.putStrLn $ BL.pack title
 
 pprintHeader :: Header -> IO ()
 pprintHeader Header{..} = do
@@ -45,3 +61,7 @@ main = do
     putStrLn "<>"
     print (orders s3m)
     putStrLn "<>"
+    putStrLn "Instruments:"
+    putStrLn "============"
+    mapM_ pprintInstrument (instruments s3m)
+    
