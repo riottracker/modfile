@@ -19,7 +19,7 @@ import           Data.Module.S3M.Instrument.PCM
 
 
 data Instrument = Instrument { instrumentType :: Word8     -- 0: empty, 1: PCM, 2: adlib melody instrument, 3-7: adlib percussion instrument
-                             , filename       :: [Word8]   -- 12 bytes 
+                             , fileName       :: [Word8]   -- 12 bytes 
                              , pcmSample      :: Maybe PCMSample
                              , adlibSample    :: Maybe AdlibSample
                              }
@@ -28,7 +28,7 @@ data Instrument = Instrument { instrumentType :: Word8     -- 0: empty, 1: PCM, 
 getInstrument :: Get Instrument
 getInstrument = do
      instrumentType <- getWord8
-     filename <- replicateM 12 getWord8
+     fileName <- replicateM 12 getWord8
      pcmSample <- sequence $ if instrumentType == 1 then Just getPCMSample else Nothing
      adlibSample <- sequence $ if instrumentType `elem` [2..7] then Just getAdlibSample else Nothing
      return Instrument{..}
@@ -36,7 +36,7 @@ getInstrument = do
 putInstrument :: Instrument -> Put
 putInstrument Instrument{..} = do
      putWord8 instrumentType
-     mapM_ putWord8 filename
+     mapM_ putWord8 fileName
      forM_ pcmSample putPCMSample
      forM_ adlibSample putAdlibSample
 

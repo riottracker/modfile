@@ -17,12 +17,12 @@ data Header = Header { songName        :: [Word8]    -- 28 bytes
                      , hpad0           :: Word8
                      , magicByte       :: Word8      -- should be 0x10 for scream tracker 3 modules
                      , hpad1           :: Word16
-                     , numOrders       :: Word16
-                     , numInstruments  :: Word16
-                     , numPatterns     :: Word16
-                     , flags           :: Word16
-                     , trackerVersion  :: Word16
-                     , format          :: Word16
+                     , songLength       :: Word16     -- number of entries in pattern order table
+                     , numInstruments   :: Word16
+                     , numPatterns      :: Word16
+                     , flags            :: Word16
+                     , trackerVersion   :: Word16
+                     , sampleSignedness :: Word16
                      , magicString     :: Word32     -- "SCRM"
                      , globalVolume    :: Word8
                      , initialSpeed    :: Word8
@@ -63,12 +63,12 @@ putHeader Header{..} = do
     mapM_ putWord8 (songName ++ [hpad0, magicByte])
     mapM_ putWord16le
           [ hpad1
-          , numOrders
+          , songLength
           , numInstruments
           , numPatterns
           , flags
           , trackerVersion
-          , format
+          , sampleSignedness
           ]
     putWord32le magicString
     mapM_ putWord8 $

@@ -20,7 +20,7 @@ data Header = Header { idText          :: [Word8]    -- 17 bytes: "Extended modu
                      , trackerName     :: [Word8]    -- 20 bytes
                      , version         :: Word16
                      , headerSize      :: Word32
-                     , songLength      :: Word16     -- number of patterns
+                     , songLength      :: Word16     -- number of entries in pattern order table
                      , restartPosition :: Word16
                      , numChannels     :: Word16
                      , numPatterns     :: Word16

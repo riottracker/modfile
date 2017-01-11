@@ -33,7 +33,7 @@ data Module = Module { header      :: Header
 getModule :: Get Module
 getModule = do
     header <- getHeader
-    orders <- replicateM (fromIntegral (numOrders header)) getWord8
+    orders <- replicateM (fromIntegral (songLength header)) getWord8
     insOffsets <- replicateM (fromIntegral (numInstruments header)) getWord16le
     patOffsets <- replicateM (fromIntegral (numPatterns header)) getWord16le
     instruments <- mapM (getAtOffset getInstrument) insOffsets

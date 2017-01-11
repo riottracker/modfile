@@ -18,7 +18,7 @@ import           Data.Module.S3M.Pattern
 
 pprintInstrument :: Instrument -> IO ()
 pprintInstrument Instrument{..} = do
-    BL.putStr $ BL.pack filename
+    BL.putStr $ BL.pack fileName
     forM_ pcmSample pprintPCMSample
     forM_ adlibSample pprintAdlibSample
     putStrLn "<>"
@@ -37,7 +37,7 @@ pprintHeader :: Header -> IO ()
 pprintHeader Header{..} = do
     putStr     "Song name.......: "
     BL.putStrLn $ BL.pack songName
-    putStrLn $ "Orders..........: " ++ show numOrders
+    putStrLn $ "Orders..........: " ++ show songLength
     putStrLn $ "Instruments.....: " ++ show numInstruments
     putStrLn $ "Patterns........: " ++ show numPatterns
     putStrLn $ "Version.........: " ++ show trackerVersion

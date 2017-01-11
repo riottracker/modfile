@@ -13,15 +13,15 @@ import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
  
-data Header = Header { magicNumber    :: Word32     -- "IMPM" starting at v2.03
+data Header = Header { magicString    :: Word32     -- "IMPM" starting at v2.03
                      , songName       :: [Word8]    -- 26 bytes
                      , hpad0          :: [Word8]    -- 2 bytes
-                     , songLength     :: Word16     -- number of orders
+                     , songLength     :: Word16     -- number of entries in pattern order table
                      , numInstruments :: Word16     -- number of instruments
                      , numSamples     :: Word16     -- number of samples
                      , numPatterns    :: Word16     -- number of patterns
-                     , createdWith    :: Word16
-                     , compatibleWith :: Word16
+                     , trackerVersion :: Word16
+                     , formatVersion  :: Word16
                      , flags          :: Word16     -- bit 0: stereo/mono
                                                     -- bit 1: no mixing occurs if volume
                                                     --        equals zero (deprecated)
@@ -72,7 +72,7 @@ getHeader = Header <$> getWord32le
 
 putHeader :: Header -> Put
 putHeader Header{..} = do
-    putWord32le magicNumber
+    putWord32le magicString
     mapM_ putWord8 songName
     mapM_ putWord8 hpad0
     mapM_ putWord16le
@@ -80,8 +80,8 @@ putHeader Header{..} = do
           , numInstruments
           , numSamples
           , numPatterns
-          , createdWith
-          , compatibleWith
+          , trackerVersion
+          , formatVersion
           , flags
           , special
           ]

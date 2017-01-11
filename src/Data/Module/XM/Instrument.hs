@@ -31,9 +31,9 @@ data ExtendedInstrumentHeader = ExtendedInstrumentHeader { sampleHeaderSize :: W
                                                          , keymap           :: [Word8]
                                                          , volumeEnvelope   :: [Word8]
                                                          , panningEnvelope  :: [Word8]
-                                                         , numVolumePoints  :: Word8
-                                                         , numPanningPoints :: Word8
-                                                         , volSustainPoint  :: Word8
+                                                         , volNumNodes      :: Word8
+                                                         , panNumNodes      :: Word8
+                                                         , panSustainNode   :: Word8
                                                          , volLoopStart     :: Word8
                                                          , volLoopEnd       :: Word8
                                                          , panSustainPoint  :: Word8
