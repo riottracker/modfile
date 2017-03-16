@@ -24,7 +24,7 @@ library
                      , Data.Module.XM.Instrument
                      , Data.Module.XM.Pattern
                      , Data.Module.XM.Header
-                     , Data.Module.XM.Sample
+                     , Data.Module.XM.SampleHeader
                      , Data.Module.S3M
                      , Data.Module.S3M.Header
                      , Data.Module.S3M.Instrument

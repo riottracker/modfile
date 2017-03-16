@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards, TupleSections #-}
 
 module Data.Module.XM.Instrument (
       Instrument (..)
@@ -14,7 +14,7 @@ import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Word
 
-import           Data.Module.XM.Sample
+import           Data.Module.XM.SampleHeader
 
 
 data Instrument = Instrument { instrumentSize :: Word32
@@ -23,7 +23,7 @@ data Instrument = Instrument { instrumentSize :: Word32
                              , sampleNum      :: Word16
 -- if numSamples > 0
                              , extendedHeader :: Maybe ExtendedInstrumentHeader
-                             , samples        :: Maybe [Sample]
+                             , samples        :: [(SampleHeader, [Word8])]
                              }
     deriving (Show, Eq)
 
@@ -68,8 +68,12 @@ getInstrument = label "XM.Instrument" $ do
      extendedHeader <- sequence $ if sampleNum > 0 then Just getExtendedInstrumentHeader else Nothing
      headerEnd <- bytesRead
      skip $ (fromIntegral instrumentSize) + (fromIntegral headerStart) - (fromIntegral headerEnd)
-     samples <- sequence $ if sampleNum > 0 then Just (replicateM (fromIntegral sampleNum) getSample) else Nothing
+     sampleHeaders <- replicateM (fromIntegral sampleNum) getSampleHeader
+     samples <- sequence $ map getSample sampleHeaders
      return Instrument{..}
+
+getSample :: SampleHeader -> Get (SampleHeader, [Word8])
+getSample h = fmap (h ,) (replicateM (fromIntegral (sampleLength h)) getWord8)
 
 putInstrument :: Instrument -> Put
 putInstrument Instrument{..} = do

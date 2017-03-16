@@ -1,9 +1,8 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.XM.Sample (
-      Sample (..)
-    , getSample
-    , putSample
+module Data.Module.XM.SampleHeader
+    ( getSampleHeader
+    , putSampleHeader
     , SampleHeader (..)
     ) where
 
@@ -44,15 +43,4 @@ putSampleHeader SampleHeader{..} = do
     mapM_ putWord32le [sampleLength, loopStart, loopLength]
     mapM_ putWord8 [volume, finetune, sampleType, panning, relativeNote, reserved]
     mapM_ putWord8 name
-
-getSample :: Get Sample
-getSample = label "XM.Sample" $ do
-    sampleHeader <- getSampleHeader
-    sampleData <- replicateM (fromIntegral (sampleLength sampleHeader)) getWord8
-    return $ Sample{..}
-
-putSample :: Sample -> Put
-putSample Sample{..} = do
-    putSampleHeader sampleHeader
-    mapM_ putWord8 sampleData
 
