@@ -28,12 +28,12 @@ data Pattern = Pattern { headerLength  :: Word32
                    deriving (Show, Eq)
 
 getPatternData :: Int -> Get [(Word8, Word8, Word8, Word8, Word8)]
-getPatternData size = do
+getPatternData size = label "XM.Pattern row" $ do
     d <- replicateM size getWord8
     return . map (\[a,b,c,d,e] -> (a,b,c,d,e)) . filter ((== 5) . length) $ chunksOf 5 d
 
 getPattern :: Get Pattern
-getPattern = do
+getPattern = label "XM.Pattern" $ do
     headerLength <- getWord32le
     packingType <- getWord8
     numRows <- getWord16le

@@ -59,7 +59,7 @@ getExtendedInstrumentHeader = ExtendedInstrumentHeader <$> getWord32le <*> repli
                                                        <*> getWord8 <*> getWord8 <*> getWord16le <*> getWord16le
 
 getInstrument :: Get Instrument
-getInstrument = do
+getInstrument = label "XM.Instrument" $ do
      headerStart <- bytesRead
      instrumentSize <- getWord32le
      instrumentName <- replicateM 22 getWord8

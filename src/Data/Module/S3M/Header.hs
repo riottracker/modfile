@@ -37,7 +37,8 @@ data Header = Header { songName        :: [Word8]    -- 28 bytes
     deriving (Show, Eq)
 
 getHeader :: Get Header
-getHeader = Header <$> replicateM 28 getWord8
+getHeader = label "S3M.Header" $
+            Header <$> replicateM 28 getWord8
                    <*> getWord8
                    <*> getWord8
                    <*> getWord16le

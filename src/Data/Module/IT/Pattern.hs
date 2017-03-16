@@ -26,7 +26,8 @@ data Command = Command { cmd :: Word8
     deriving (Show, Eq)
 
 getCommand :: Get Command
-getCommand = Command <$> getWord8 <*> getWord8
+getCommand = label "IT.Pattern Command" $
+             Command <$> getWord8 <*> getWord8
 
 putCommand :: Command -> Put
 putCommand Command{..} =
@@ -45,7 +46,7 @@ emptyCell :: Cell
 emptyCell = Cell 0 0 Nothing Nothing Nothing Nothing
 
 getCell :: Word8 -> Word8 -> [Cell] -> Get Cell
-getCell channel mask rowBuffer = do
+getCell channel mask rowBuffer = label "IT.Pattern Cell" $ do
     n <- if testBit mask 4
          then pure (note lastCell)
          else sequence (if testBit mask 0 then Just getWord8 else Nothing)
@@ -69,7 +70,7 @@ data Pattern = Pattern { length  :: Word16
     deriving (Show, Eq)
 
 getPattern :: Get Pattern
-getPattern = do
+getPattern = label "IT.Pattern" $ do
     length <- getWord16le
     numRows <- getWord16le
     ppad0 <- replicateM 4 getWord8
@@ -91,7 +92,7 @@ replaceNth n new (x : xs)
     | otherwise = x : replaceNth (n - 1) new xs
 
 getRow :: [Cell] -> Get ([Cell], [Cell])
-getRow rowBuffer = do
+getRow rowBuffer = label "IT.Pattern Row" $ do
     chn <- getWord8
     if chn == 0
         then return ([], rowBuffer)

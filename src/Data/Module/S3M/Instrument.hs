@@ -26,7 +26,7 @@ data Instrument = Instrument { instrumentType :: Word8     -- 0: empty, 1: PCM, 
     deriving (Show, Eq)
 
 getInstrument :: Get Instrument
-getInstrument = do
+getInstrument = label "S3M.Instrument" $ do
      instrumentType <- getWord8
      fileName <- replicateM 12 getWord8
      pcmSample <- sequence $ if instrumentType == 1 then Just getPCMSample else Nothing

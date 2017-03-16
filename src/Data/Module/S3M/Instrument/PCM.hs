@@ -33,7 +33,7 @@ data PCMSample = PCMSample { ptrDataH     :: Word8
     deriving (Show, Eq)
 
 getPCMSample :: Get PCMSample
-getPCMSample = do
+getPCMSample = label "S3M.Instrument.PCM" $ do
      ptrDataH <- getWord8
      ptrDataL <- getWord16le
      sampleLength <- getWord32le

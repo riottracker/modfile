@@ -40,7 +40,8 @@ data Command = Command { cmd :: Word8
     deriving (Show, Eq)
 
 getCommand :: Get Command
-getCommand = Command <$> getWord8 <*> getWord8
+getCommand = label "S3M.Pattern Command" $
+             Command <$> getWord8 <*> getWord8
 
 putCommand :: Command -> Put
 putCommand Command{..} =
@@ -50,7 +51,8 @@ emptyCell :: Cell
 emptyCell = Cell 0 Nothing Nothing Nothing Nothing
 
 getCell :: Get (Maybe Cell)
-getCell = getWord8 >>=
+getCell = label "S3M.Pattern Cell" $
+  getWord8 >>=
     \mask ->
       if mask == 0 then
           return Nothing
@@ -63,7 +65,7 @@ getCell = getWord8 >>=
         return $ Just (Cell mask n i v c)
 
 getPattern :: Get Pattern
-getPattern = do
+getPattern = label "S3M.Pattern" $ do
     br0 <- bytesRead
     packedLength <- getWord16le
     let getToLimit lst = bytesRead >>=
@@ -74,7 +76,7 @@ getPattern = do
     return Pattern{..}
 
 getRow :: Get [Cell]
-getRow = g []
+getRow = label "S3M.Pattern Row" $ g []
   where
     g l = getCell >>= \case
             Just x -> g $ l ++ [x]

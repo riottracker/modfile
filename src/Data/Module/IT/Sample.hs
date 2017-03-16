@@ -40,7 +40,8 @@ data SampleHeader = SampleHeader { magicNumber   :: Word32    -- "IMPS"
     deriving (Show, Eq)
 
 getSampleHeader :: Get SampleHeader
-getSampleHeader = SampleHeader <$> getWord32le <*> replicateM 12 getWord8
+getSampleHeader = label "IT.Sample SampleHeader" $
+                  SampleHeader <$> getWord32le <*> replicateM 12 getWord8
                                <*> getWord8 <*> getWord8 <*> getWord8
                                <*> getWord8 <*> replicateM 26 getWord8
                                <*> getWord16le <*> getWord32le <*> getWord32le

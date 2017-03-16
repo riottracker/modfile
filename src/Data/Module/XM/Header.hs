@@ -32,7 +32,8 @@ data Header = Header { idText          :: [Word8]    -- 17 bytes: "Extended modu
     deriving (Show, Eq)
 
 getHeader :: Get Header
-getHeader = Header <$> replicateM 17 getWord8 
+getHeader = label "XM.Header" $
+            Header <$> replicateM 17 getWord8 
                    <*> replicateM 20 getWord8
                    <*> getWord8
                    <*> replicateM 20 getWord8

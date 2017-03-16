@@ -53,10 +53,12 @@ data Instrument = Instrument { magicNumber           :: Word32             -- "I
 
 
 getNode :: Get (Word16, Word8)
-getNode = fmap swap (liftM2 (,) getWord8 getWord16le)
+getNode = label "IT.Instrument Node" $
+          fmap swap (liftM2 (,) getWord8 getWord16le)
 
 getEnvelope :: Get Envelope
-getEnvelope = Envelope <$> getWord8 <*> getWord8 <*> getWord8
+getEnvelope = label "IT.Instrument Envelope" $
+              Envelope <$> getWord8 <*> getWord8 <*> getWord8
                        <*> getWord8 <*> getWord8 <*> getWord8
                        <*> replicateM 25 getNode <*> getWord8
 
@@ -72,7 +74,8 @@ putEnvelope Envelope{..} = do
     putWord8 epad0
 
 getInstrument :: Get Instrument
-getInstrument = Instrument <$> getWord32le <*> replicateM 12 getWord8 <*> getWord8
+getInstrument = label "IT.Instrument" $
+                Instrument <$> getWord32le <*> replicateM 12 getWord8 <*> getWord8
                            <*> getWord8 <*> getWord8 <*> getWord8 <*> getWord16le
                            <*> getWord8 <*> getWord8 <*> getWord8 <*> getWord8
                            <*> replicateM 2 getWord8 <*> getWord16le <*> getWord8
@@ -80,7 +83,8 @@ getInstrument = Instrument <$> getWord32le <*> replicateM 12 getWord8 <*> getWor
                            <*> getNoteSampleTable <*> getEnvelope <*> getEnvelope <*> getEnvelope
 
 getNoteSampleTable :: Get [(Word8, Word8)]
-getNoteSampleTable = fmap (l2t . chunksOf 2) (replicateM 240 getWord8)
+getNoteSampleTable = label "IT.Instrument NoteSampleTable" $
+                     fmap (l2t . chunksOf 2) (replicateM 240 getWord8)
   where l2t = map (\[a,b] -> (a,b))
 
 putInstrument :: Instrument -> Put

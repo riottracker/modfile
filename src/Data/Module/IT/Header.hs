@@ -47,7 +47,8 @@ data Header = Header { magicString    :: Word32     -- "IMPM" starting at v2.03
     deriving (Show, Eq)
 
 getHeader :: Get Header
-getHeader = Header <$> getWord32le
+getHeader = label "IT.Header" $
+            Header <$> getWord32le
                    <*> replicateM 26 getWord8
                    <*> replicateM 2 getWord8
                    <*> getWord16le

@@ -33,7 +33,8 @@ data Sample = Sample { sampleHeader :: SampleHeader
                  deriving (Show, Eq)
 
 getSampleHeader :: Get SampleHeader
-getSampleHeader = SampleHeader <$> getWord32le <*> getWord32le <*> getWord32le
+getSampleHeader = label "XM.Sample SampleHeader" $
+                  SampleHeader <$> getWord32le <*> getWord32le <*> getWord32le
                                <*> getWord8 <*> getWord8 <*> getWord8
                                <*> getWord8 <*> getWord8 <*> getWord8
                                <*> replicateM 22 getWord8
@@ -45,7 +46,7 @@ putSampleHeader SampleHeader{..} = do
     mapM_ putWord8 name
 
 getSample :: Get Sample
-getSample = do
+getSample = label "XM.Sample" $ do
     sampleHeader <- getSampleHeader
     sampleData <- replicateM (fromIntegral (sampleLength sampleHeader)) getWord8
     return $ Sample{..}

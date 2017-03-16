@@ -25,7 +25,8 @@ data AdlibSample = AdlibSample { reserved0 :: [Word8] -- 3 bytes
     deriving (Show, Eq)
 
 getAdlibSample :: Get AdlibSample
-getAdlibSample = AdlibSample <$> replicateM 3 getWord8 <*> replicateM 12 getWord8 <*> getWord8
+getAdlibSample = label "S3M.Instrument.Adlib" $
+                 AdlibSample <$> replicateM 3 getWord8 <*> replicateM 12 getWord8 <*> getWord8
                              <*> getWord8 <*> getWord16le <*> getWord32le
                              <*> replicateM 12 getWord8 <*> replicateM 28 getWord8 <*> replicateM 4 getWord8
 
