@@ -32,7 +32,7 @@ letters b
     | otherwise = Nothing
 
 getHeader :: Get Header
-getHeader =  do
+getHeader =  label "MOD.Header" $ do
     letterbytes <- lookAhead $ skip 1080 <*> replicateM 4 getWord8
     let idLetters = letters letterBytes
     let numOfSamples = case idLetters of Nothing -> 15
