@@ -18,12 +18,13 @@ import           Data.Module.S3M.Pattern
 
 import           Util
 
+import Debug.Trace
 
 data Module = Module { header      :: Header
                      , orders      :: [Word8]
                      , insOffsets  :: [Word16]
                      , patOffsets  :: [Word16]
--- OPTIONAL:         , panning     :: [Word8]
+                     , panning     :: [Word8]
                      , instruments :: [Instrument]
                      , patterns    :: [Pattern]
                      }
@@ -36,8 +37,9 @@ getModule = do
     orders <- replicateM (fromIntegral (songLength header)) getWord8
     insOffsets <- replicateM (fromIntegral (numInstruments header)) getWord16le
     patOffsets <- replicateM (fromIntegral (numPatterns header)) getWord16le
-    instruments <- mapM (getAtOffset getInstrument) insOffsets
-    patterns <- mapM (getAtOffset getPattern) patOffsets
+    panning <- if defaultPanFlag header == 252 then replicateM 32 getWord8 else return []
+    instruments <- mapM (getAtOffset getInstrument . (16*)) insOffsets
+    patterns <- mapM (getAtOffset getPattern . (16*)) patOffsets
     return Module{..}
 
 putModule :: Module -> Put

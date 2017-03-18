@@ -18,14 +18,13 @@ import           Data.Module.S3M.Pattern
 
 pprintInstrument :: Instrument -> IO ()
 pprintInstrument Instrument{..} = do
-    BL.putStr $ BL.pack fileName
+    BL.putStrLn $ BL.pack fileName
     forM_ pcmSample pprintPCMSample
     forM_ adlibSample pprintAdlibSample
-    putStrLn "<>"
 
 pprintAdlibSample :: AdlibSample -> IO ()
 pprintAdlibSample AdlibSample{..} = do
-    putStrLn "Adlib: "
+    putStr "Adlib: "
     BL.putStrLn $ BL.pack title
 
 pprintPCMSample :: PCMSample -> IO ()
