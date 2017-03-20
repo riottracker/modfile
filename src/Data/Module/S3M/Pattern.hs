@@ -1,5 +1,4 @@
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE LambdaCase      #-}
+{-# LANGUAGE RecordWildCards, LambdaCase #-}
 
 module Data.Module.S3M.Pattern (
       Pattern (..)
@@ -11,6 +10,7 @@ module Data.Module.S3M.Pattern (
 
 import           Control.Applicative ((<$>))
 import           Control.Monad
+import           Control.Monad.Loops
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
@@ -64,6 +64,14 @@ getCell = label "S3M.Pattern Cell" $
         c <- getByMask 7 getCommand
         return $ Just (Cell mask n i v c)
 
+putCell :: Maybe Cell -> Put
+putCell Nothing         = putWord8 0
+putCell (Just Cell{..}) = putWord8 mask
+                       >> maybe (return ()) putWord8 note
+                       >> maybe (return ()) putWord8 instrument
+                       >> maybe (return ()) putWord8 volume
+                       >> maybe (return ()) putCommand command
+
 getPattern :: Get Pattern
 getPattern = label "S3M.Pattern" $ do
     br0 <- bytesRead
@@ -76,12 +84,11 @@ getPattern = label "S3M.Pattern" $ do
     return Pattern{..}
 
 getRow :: Get [Cell]
-getRow = label "S3M.Pattern Row" $ g []
-  where
-    g l = getCell >>= \case
-            Just x -> g $ l ++ [x]
-            Nothing -> return l
+getRow = label "S3M.Pattern Row" $ whileJust getCell return
+
+putRow :: [Cell] -> Put
+putRow l = mapM_ (putCell . Just) l >> putCell Nothing
 
 putPattern :: Pattern -> Put
-putPattern _ = fail "not implemented"
+putPattern Pattern{..} = putWord16le packedLength >> mapM_ putRow rows 
 
