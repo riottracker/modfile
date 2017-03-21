@@ -18,6 +18,9 @@ import           Data.Bits
 import           Data.Maybe
 import           Data.Word
 
+import           Util
+
+
 data Cell = Cell { mask       :: Word8
                  , note       :: Maybe Word8
                  , instrument :: Maybe Word8
@@ -57,11 +60,10 @@ getCell = label "S3M.Pattern Cell" $
       if mask == 0 then
           return Nothing
       else do
-        let getByMask b f = sequence $ if testBit mask b then Just f else Nothing
-        n <- getByMask 5 getWord8
-        i <- getByMask 5 getWord8
-        v <- getByMask 6 getWord8
-        c <- getByMask 7 getCommand
+        n <- getByMask mask 5 getWord8
+        i <- getByMask mask 5 getWord8
+        v <- getByMask mask 6 getWord8
+        c <- getByMask mask 7 getCommand
         return $ Just (Cell mask n i v c)
 
 putCell :: Maybe Cell -> Put

@@ -19,6 +19,8 @@ import           Data.Bits
 import           Data.Maybe
 import           Data.Traversable
 
+import           Util
+
 
 data Command = Command { cmd :: Word8
                        , val :: Word8
@@ -47,20 +49,15 @@ emptyCell = Cell 0 0 Nothing Nothing Nothing Nothing
 
 getCell :: Word8 -> Word8 -> [Cell] -> Get Cell
 getCell channel mask rowBuffer = label "IT.Pattern Cell" $ do
-    n <- if testBit mask 4
-         then pure (note lastCell)
-         else sequence (if testBit mask 0 then Just getWord8 else Nothing)
-    i <- if testBit mask 5
-         then pure (instrument lastCell)
-         else sequence (if testBit mask 1 then Just getWord8 else Nothing)
-    v <- if testBit mask 6
-         then pure (volpan lastCell)
-         else sequence (if testBit mask 2 then Just getWord8 else Nothing)
-    c <- if testBit mask 7
-         then pure (command lastCell)
-         else sequence (if testBit mask 3 then Just getCommand else Nothing)
+    n <- item 4 0 getWord8 note
+    i <- item 5 1 getWord8 instrument
+    v <- item 6 2 getWord8 volpan
+    c <- item 7 3 getCommand command
     return $ Cell channel mask n i v c
-  where lastCell = rowBuffer !! fromIntegral channel
+  where lastCell       = rowBuffer !! fromIntegral channel
+        item b1 b2 g a = if testBit mask b1
+                         then pure (a lastCell)
+                         else getByMask mask b2 g
 
 data Pattern = Pattern { length  :: Word16
                        , numRows :: Word16
