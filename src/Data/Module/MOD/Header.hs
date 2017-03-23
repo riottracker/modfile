@@ -24,11 +24,15 @@ data Header = Header { songName    :: [Word8] -- 20 bytes, space- or zero-padded
                      }
     deriving (Show, Eq)
 
-letterList = ["M.K.", "M!K!", "FLT4", "FLT8", "6CHN", "6CHN", "8CHN"]
+sillyEncode :: Char -> Word8
+sillyEncode = fromInteger . toInteger . ord
+
+letterList :: [[Word8]]
+letterList = map (map sillyEncode) ["M.K.", "M!K!", "FLT4", "FLT8", "6CHN", "6CHN", "8CHN"]
 
 letters :: [Word8] -> Maybe [Word8]
-letters b
-    | elem b letterList = Just b
+letters x
+    | elem x letterList = Just x
     | otherwise = Nothing
 
 getHeader :: Get Header
