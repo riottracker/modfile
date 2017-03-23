@@ -23,9 +23,9 @@ data SampleRec = SampleRec { sampleName :: [Word8] -- 22 bytes, zero-padded
 
 type SampleData = [Word8]
 
-data Sample = Sample { desc  ::  SampleRec
-                     , sdata :: SampleData
-                     }
+{-data Sample = Sample { desc  ::  SampleRec-}
+                     {-, sdata :: SampleData-}
+                     {-}-}
 
 getSampleRec :: Get SampleRec
 getSampleRec = SampleRec <$> replicateM 22 getWord8
@@ -35,6 +35,5 @@ getSampleRec = SampleRec <$> replicateM 22 getWord8
                          <*> getWord16le
                          <*> getWord16le
 
--- getSampleData :: SampleRec -> Get SampleData
--- getSampleData d =  -- TODO: read length words of signed 8-bit integers
-    -- where length = (halfSampleLength d) * 2 -- dunno
+getSampleData :: Int -> Get SampleData
+getSampleData x = replicateM x getWord8
