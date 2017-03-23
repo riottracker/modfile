@@ -15,22 +15,22 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Data.Module.IT
-                     , Data.Module.IT.Instrument
-                     , Data.Module.IT.Pattern
-                     , Data.Module.IT.Header
-                     , Data.Module.IT.Sample
-                     , Data.Module.XM
-                     , Data.Module.XM.Instrument
-                     , Data.Module.XM.Pattern
-                     , Data.Module.XM.Header
-                     , Data.Module.XM.SampleHeader
-                     , Data.Module.S3M
-                     , Data.Module.S3M.Header
-                     , Data.Module.S3M.Instrument
-                     , Data.Module.S3M.Instrument.PCM
-                     , Data.Module.S3M.Instrument.Adlib
-                     , Data.Module.S3M.Pattern
+  exposed-modules:     Codec.Tracker.IT
+                     , Codec.Tracker.IT.Instrument
+                     , Codec.Tracker.IT.Pattern
+                     , Codec.Tracker.IT.Header
+                     , Codec.Tracker.IT.Sample
+                     , Codec.Tracker.XM
+                     , Codec.Tracker.XM.Instrument
+                     , Codec.Tracker.XM.Pattern
+                     , Codec.Tracker.XM.Header
+                     , Codec.Tracker.XM.SampleHeader
+                     , Codec.Tracker.S3M
+                     , Codec.Tracker.S3M.Header
+                     , Codec.Tracker.S3M.Instrument
+                     , Codec.Tracker.S3M.Instrument.PCM
+                     , Codec.Tracker.S3M.Instrument.Adlib
+                     , Codec.Tracker.S3M.Pattern
   other-modules:       Util
   build-depends:       base >= 4.7 && < 5
                      , binary

@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards, LambdaCase #-}
 
-module Data.Module.S3M.Pattern (
+module Codec.Tracker.S3M.Pattern (
       Pattern (..)
     , Command (..)
     , Cell (..)

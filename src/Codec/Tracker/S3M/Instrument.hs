@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.S3M.Instrument (
+module Codec.Tracker.S3M.Instrument (
       Instrument (..)
     , getInstrument
     , putInstrument
@@ -14,8 +14,8 @@ import           Data.Binary.Put
 import           Data.Maybe
 import           Data.Word
 
-import           Data.Module.S3M.Instrument.Adlib
-import           Data.Module.S3M.Instrument.PCM
+import           Codec.Tracker.S3M.Instrument.Adlib
+import           Codec.Tracker.S3M.Instrument.PCM
 
 
 data Instrument = Instrument { instrumentType :: Word8     -- 0: empty, 1: PCM, 2: adlib melody instrument, 3-7: adlib percussion instrument

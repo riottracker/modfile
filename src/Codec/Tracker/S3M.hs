@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.S3M (
+module Codec.Tracker.S3M (
       Module (..)
     , getModule
     , putModule
@@ -12,9 +12,9 @@ import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Word
 
-import           Data.Module.S3M.Header
-import           Data.Module.S3M.Instrument
-import           Data.Module.S3M.Pattern
+import           Codec.Tracker.S3M.Header
+import           Codec.Tracker.S3M.Instrument
+import           Codec.Tracker.S3M.Pattern
 
 import           Util
 

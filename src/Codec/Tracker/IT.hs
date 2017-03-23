@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.IT (
+module Codec.Tracker.IT (
       Module(..)
     , getModule
     , putModule
@@ -12,10 +12,10 @@ import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Word
 
-import           Data.Module.IT.Header
-import           Data.Module.IT.Instrument
-import           Data.Module.IT.Pattern
-import           Data.Module.IT.Sample
+import           Codec.Tracker.IT.Header
+import           Codec.Tracker.IT.Instrument
+import           Codec.Tracker.IT.Pattern
+import           Codec.Tracker.IT.Sample
 
 import           Util
 

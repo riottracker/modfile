@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.IT.Pattern (
+module Codec.Tracker.IT.Pattern (
       Pattern (..)
     , Cell (..)
     , Command (..)

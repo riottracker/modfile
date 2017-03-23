@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.S3M.Instrument.Adlib (
+module Codec.Tracker.S3M.Instrument.Adlib (
       AdlibSample (..)
     , getAdlibSample
     , putAdlibSample

@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards, TupleSections #-}
 
-module Data.Module.XM.Instrument (
+module Codec.Tracker.XM.Instrument (
       Instrument (..)
     , ExtendedInstrumentHeader (..)
     , getInstrument
@@ -14,7 +14,7 @@ import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Word
 
-import           Data.Module.XM.SampleHeader
+import           Codec.Tracker.XM.SampleHeader
 
 
 data Instrument = Instrument { instrumentSize :: Word32

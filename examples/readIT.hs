@@ -6,10 +6,10 @@ import           Control.Monad
 import           Data.Binary.Get
 import qualified Data.ByteString.Lazy as BL
 
-import           Data.Module.IT
-import           Data.Module.IT.Header
-import           Data.Module.IT.Instrument
-import           Data.Module.IT.Pattern
+import           Codec.Tracker.IT
+import           Codec.Tracker.IT.Header
+import           Codec.Tracker.IT.Instrument
+import           Codec.Tracker.IT.Pattern
 
 
 pprintInstrument :: Instrument -> IO ()

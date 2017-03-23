@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.XM (
+module Codec.Tracker.XM (
       Module (..)
     , getModule
     , putModule
@@ -12,9 +12,9 @@ import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Word
 
-import           Data.Module.XM.Header
-import           Data.Module.XM.Instrument
-import           Data.Module.XM.Pattern
+import           Codec.Tracker.XM.Header
+import           Codec.Tracker.XM.Instrument
+import           Codec.Tracker.XM.Pattern
 
 
 data Module = Module { header      :: Header

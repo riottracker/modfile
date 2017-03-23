@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.S3M.Header (
+module Codec.Tracker.S3M.Header (
       Header (..)
     , getHeader
     , putHeader

@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.IT.Instrument (
+module Codec.Tracker.IT.Instrument (
       Instrument (..)
     , Envelope (..)
     , getInstrument

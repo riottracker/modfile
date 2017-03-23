@@ -1,7 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE LambdaCase      #-}
 
-module Data.Module.XM.Pattern (
+module Codec.Tracker.XM.Pattern (
       Pattern (..)
     , Cell (..)
     , getPattern

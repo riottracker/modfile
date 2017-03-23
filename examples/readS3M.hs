@@ -8,12 +8,12 @@ import           Data.Binary.Get
 import           Data.Maybe
 import qualified Data.ByteString.Lazy as BL
 
-import           Data.Module.S3M
-import           Data.Module.S3M.Header
-import           Data.Module.S3M.Instrument
-import           Data.Module.S3M.Instrument.Adlib
-import           Data.Module.S3M.Instrument.PCM
-import           Data.Module.S3M.Pattern
+import           Codec.Tracker.S3M
+import           Codec.Tracker.S3M.Header
+import           Codec.Tracker.S3M.Instrument
+import           Codec.Tracker.S3M.Instrument.Adlib
+import           Codec.Tracker.S3M.Instrument.PCM
+import           Codec.Tracker.S3M.Pattern
 
 
 pprintInstrument :: Instrument -> IO ()

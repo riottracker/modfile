@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.S3M.Instrument.PCM (
+module Codec.Tracker.S3M.Instrument.PCM (
       PCMSample(..)
     , getPCMSample
     , putPCMSample

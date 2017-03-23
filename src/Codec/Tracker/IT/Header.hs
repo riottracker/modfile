@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Data.Module.IT.Header (
+module Codec.Tracker.IT.Header (
       Header (..)
     , getHeader
     , putHeader
