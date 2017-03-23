@@ -69,7 +69,7 @@ getInstrument = label "XM.Instrument" $ do
      headerEnd <- bytesRead
      skip $ (fromIntegral instrumentSize) + (fromIntegral headerStart) - (fromIntegral headerEnd)
      sampleHeaders <- replicateM (fromIntegral sampleNum) getSampleHeader
-     samples <- sequence $ map getSample sampleHeaders
+     samples <- mapM getSample sampleHeaders
      return Instrument{..}
 
 getSample :: SampleHeader -> Get (SampleHeader, [Word8])

@@ -34,7 +34,7 @@ pprintHeader Header{..} = do
 pprintPattern :: Pattern -> IO ()
 pprintPattern Pattern{..} = do
     putStrLn $ "Packed size: " ++ show packedSize ++ "  Rows: " ++ show numRows
-    print $ patternData
+    print patternData
 
 main :: IO ()
 main = do

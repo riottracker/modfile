@@ -40,12 +40,12 @@ data Pattern = Pattern { headerLength  :: Word32
 
 getCell :: Get Cell
 getCell = getWord8 >>=
-   \n -> case testBit n 7 of
-           False -> Cell (Just n) <$> (Just <$> getWord8) <*> (Just <$> getWord8)
-                                  <*> (Just <$> getWord8) <*> (Just <$> getWord8)
-           True  -> Cell <$> getByMask n 0 getWord8 <*> getByMask n 1 getWord8 
-                         <*> getByMask n 2 getWord8 <*> getByMask n 3 getWord8
-                         <*> getByMask n 4 getWord8
+   \n -> if not (testBit n 7)
+         then Cell (Just n) <$> (Just <$> getWord8) <*> (Just <$> getWord8)
+                            <*> (Just <$> getWord8) <*> (Just <$> getWord8)
+         else Cell <$> getByMask n 0 getWord8 <*> getByMask n 1 getWord8 
+                   <*> getByMask n 2 getWord8 <*> getByMask n 3 getWord8
+                   <*> getByMask n 4 getWord8
 
 putCell :: Cell -> Put
 putCell (Cell (Just n) Nothing Nothing Nothing Nothing) = putWord8 n

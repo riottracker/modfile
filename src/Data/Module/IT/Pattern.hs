@@ -71,7 +71,7 @@ getPattern = label "IT.Pattern" $ do
     length <- getWord16le
     numRows <- getWord16le
     ppad0 <- replicateM 4 getWord8
-    rows <- liftM (map fst) (getRows (fromIntegral numRows))
+    rows <- fmap (map fst) (getRows (fromIntegral numRows))
     return Pattern{..}
 
 getEmptyPattern :: Get Pattern
