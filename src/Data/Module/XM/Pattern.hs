@@ -37,24 +37,31 @@ data Pattern = Pattern { headerLength  :: Word32
                        }
                    deriving (Show, Eq)
 
--- getUncompressedPatternData :: Int -> Get [(Maybe Word8, Maybe Word8, Maybe Word8, Maybe Word8, Maybe Word8)]
--- getUncompressedPatternData size = label "XM.Pattern uncompressed row" $ do
---    d <- replicateM size getWord8
---    return . map (\[a,b,c,d,e] -> fmap Just (a,b,c,d,e)) . filter ((== 5) . length) $ chunksOf 5 d
-
-getPatternData :: Int -> Get [Cell]
-getPatternData size = label "XM.Pattern row" $ replicateM size getCell
 
 getCell :: Get Cell
 getCell = getWord8 >>=
-      \n -> case testBit n 0 of
-        False -> do
-          i <- getWord8
-          v <- getWord8
-          et <- getWord8
-          ep <- getWord8
-          return $ Cell (Just n) (Just i) (Just v) (Just et) (Just ep)
-        True  -> liftM5 Cell (getByMask n 0 getWord8) (getByMask n 1 getWord8) (getByMask n 2 getWord8) (getByMask n 3 getWord8) (getByMask n 4 getWord8)
+   \n -> case testBit n 7 of
+           False -> Cell (Just n) <$> (Just <$> getWord8) <*> (Just <$> getWord8)
+                                  <*> (Just <$> getWord8) <*> (Just <$> getWord8)
+           True  -> Cell <$> getByMask n 0 getWord8 <*> getByMask n 1 getWord8 
+                         <*> getByMask n 2 getWord8 <*> getByMask n 3 getWord8
+                         <*> getByMask n 4 getWord8
+
+putCell :: Cell -> Put
+putCell (Cell (Just n) Nothing Nothing Nothing Nothing) = putWord8 n
+putCell Cell{..} = do
+    putWord8 $ mask effectParam 4
+             $ mask effectType  3
+             $ mask volume      2
+             $ mask instrument  1
+             $ mask note        0
+             $ setBit zeroBits  7
+    maybe (return ()) putWord8 note
+    maybe (return ()) putWord8 instrument
+    maybe (return ()) putWord8 volume
+    maybe (return ()) putWord8 effectType
+    maybe (return ()) putWord8 effectParam
+  where mask f n m = if isJust f then setBit m n else m
 
 getPattern :: Get Pattern
 getPattern = label "XM.Pattern" $ do
@@ -62,7 +69,7 @@ getPattern = label "XM.Pattern" $ do
     packingType <- getWord8
     numRows <- getWord16le
     packedSize <- getWord16le
-    patternData <- getPatternData $ fromIntegral packedSize
+    patternData <- replicateM (fromIntegral packedSize) getCell
     return Pattern{..}
 
 putPattern :: Pattern -> Put
@@ -70,6 +77,5 @@ putPattern Pattern{..} = do
     putWord32le headerLength
     putWord8 packingType
     mapM_ putWord16le [numRows, packedSize]
-    fail "not implemented"
---  mapM_ putWord8 (foldr (\(a,b,c,d,e) f -> a : b : c : d : e : f) [] patternData)
+    mapM_ putCell patternData
 
