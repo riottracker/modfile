@@ -7,12 +7,10 @@ module Codec.Tracker.XM.Instrument (
     , putInstrument
     ) where
 
-import           Control.Applicative
 import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
-import           Data.Word
 
 import           Codec.Tracker.XM.SampleHeader
 

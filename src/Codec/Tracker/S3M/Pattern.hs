@@ -4,19 +4,18 @@ module Codec.Tracker.S3M.Pattern (
       Pattern (..)
     , Command (..)
     , Cell (..)
+    , channel
+    , emptyCell
     , getPattern
     , putPattern
     ) where
 
 import           Control.Applicative ((<$>))
-import           Control.Monad
 import           Control.Monad.Loops
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Bits
-import           Data.Maybe
-import           Data.Word
 
 import           Util
 

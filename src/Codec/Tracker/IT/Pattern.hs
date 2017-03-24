@@ -12,12 +12,9 @@ module Codec.Tracker.IT.Pattern (
 
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Bits
-import           Data.Maybe
-import           Data.Traversable
 
 import           Util
 
@@ -59,16 +56,16 @@ getCell channel mask rowBuffer = label "IT.Pattern Cell" $ do
                          then pure (a lastCell)
                          else getByMask mask b2 g
 
-data Pattern = Pattern { length  :: Word16
-                       , numRows :: Word16
-                       , ppad0   :: [Word8]           -- 4 bytes
-                       , rows    :: [[Cell]]
+data Pattern = Pattern { patternLength  :: Word16
+                       , numRows        :: Word16
+                       , ppad0          :: [Word8]           -- 4 bytes
+                       , rows           :: [[Cell]]
                        }
     deriving (Show, Eq)
 
 getPattern :: Get Pattern
 getPattern = label "IT.Pattern" $ do
-    length <- getWord16le
+    patternLength <- getWord16le
     numRows <- getWord16le
     ppad0 <- replicateM 4 getWord8
     rows <- fmap (map fst) (getRows (fromIntegral numRows))
@@ -79,7 +76,7 @@ getEmptyPattern = return $ Pattern 0 64 [0, 0, 0, 0] (replicate 64 [])
 
 putPattern :: Pattern -> Put
 putPattern Pattern{..} = do
-    putWord16le length
+    putWord16le patternLength
     putWord16le numRows
     mapM_ putWord8 ppad0
     putRows rows
@@ -87,6 +84,7 @@ putPattern Pattern{..} = do
 replaceNth n new (x : xs)
     | n == 0 = new : xs
     | otherwise = x : replaceNth (n - 1) new xs
+replaceNth _ _ [] = []
 
 getRow :: [Cell] -> Get ([Cell], [Cell])
 getRow rowBuffer = label "IT.Pattern Row" $ do

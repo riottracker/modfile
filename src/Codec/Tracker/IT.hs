@@ -10,7 +10,6 @@ import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
-import           Data.Word
 
 import           Codec.Tracker.IT.Header
 import           Codec.Tracker.IT.Instrument

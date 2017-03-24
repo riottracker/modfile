@@ -6,10 +6,8 @@ module Codec.Tracker.S3M.Header (
     , putHeader
     ) where
 
-import           Control.Applicative
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
  

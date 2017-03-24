@@ -32,7 +32,7 @@ pprintHeader Header{..} = do
 
 pprintPattern :: Pattern -> IO ()
 pprintPattern Pattern{..} = do
-    putStrLn $ "Length: " ++ show length ++ "  Rows: " ++ show numRows
+    putStrLn $ "Length: " ++ show patternLength ++ "  Rows: " ++ show numRows
     print rows
 
 main :: IO ()

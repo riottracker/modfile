@@ -14,9 +14,7 @@ import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Bits
-import           Data.List.Split
-import           Data.Maybe (fromJust, isJust)
-import           Data.Word
+import           Data.Maybe
 
 import           Util
 

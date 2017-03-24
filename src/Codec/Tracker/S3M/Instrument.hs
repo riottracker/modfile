@@ -6,13 +6,9 @@ module Codec.Tracker.S3M.Instrument (
     , putInstrument
     ) where
 
-import           Control.Applicative
 import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
-import           Data.Binary.Put
-import           Data.Maybe
-import           Data.Word
 
 import           Codec.Tracker.S3M.Instrument.Adlib
 import           Codec.Tracker.S3M.Instrument.PCM

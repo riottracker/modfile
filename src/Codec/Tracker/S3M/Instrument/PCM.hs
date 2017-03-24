@@ -6,13 +6,11 @@ module Codec.Tracker.S3M.Instrument.PCM (
     , putPCMSample
     ) where
 
-import           Control.Applicative
 import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Bits
-import           Data.Word
 
 
 data PCMSample = PCMSample { ptrDataH     :: Word8

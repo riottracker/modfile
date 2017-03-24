@@ -6,12 +6,10 @@ module Codec.Tracker.XM.Header (
     , putHeader
     ) where
 
-import           Control.Applicative
 import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
-import           Data.Word
 
  
 data Header = Header { idText          :: [Word8]    -- 17 bytes: "Extended module: "

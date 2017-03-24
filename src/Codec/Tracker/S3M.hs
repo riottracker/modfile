@@ -10,7 +10,6 @@ import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
-import           Data.Word
 
 import           Codec.Tracker.S3M.Header
 import           Codec.Tracker.S3M.Instrument
@@ -18,7 +17,6 @@ import           Codec.Tracker.S3M.Pattern
 
 import           Util
 
-import Debug.Trace
 
 data Module = Module { header      :: Header
                      , orders      :: [Word8]

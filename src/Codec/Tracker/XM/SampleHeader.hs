@@ -4,13 +4,13 @@ module Codec.Tracker.XM.SampleHeader
     ( getSampleHeader
     , putSampleHeader
     , SampleHeader (..)
+    , Sample (..)
     ) where
 
 import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
-import           Data.Word
 
 
 data SampleHeader = SampleHeader { sampleLength   :: Word32

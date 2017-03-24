@@ -3,7 +3,6 @@ module Util (
       , getByMask
       ) where
 
-import           Control.Monad
 import           Data.Binary.Get
 import           Data.Bits
 

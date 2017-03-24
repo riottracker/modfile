@@ -9,8 +9,6 @@ module Codec.Tracker.XM (
 import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
-import           Data.Binary.Put
-import           Data.Word
 
 import           Codec.Tracker.XM.Header
 import           Codec.Tracker.XM.Instrument

@@ -7,10 +7,8 @@ module Codec.Tracker.IT.Instrument (
     , putInstrument
     ) where
 
-import           Control.Applicative
 import           Control.Monad
 import           Data.Binary
-import           Data.Word
 import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.List.Split
