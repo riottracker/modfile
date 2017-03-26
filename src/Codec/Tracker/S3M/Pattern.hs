@@ -76,12 +76,8 @@ putCell (Just Cell{..}) = putWord8 mask
 getPattern :: Get Pattern
 getPattern = label "S3M.Pattern" $ do
     br0 <- bytesRead
-    packedLength <- getWord16le
-    let getToLimit lst = bytesRead >>=
-            \br1 -> if (br1 - br0) < fromIntegral packedLength then
-                        getToLimit . (lst ++) . pure =<< getRow
-                    else pure lst
-    rows <- getToLimit []
+    packedLength <- lookAhead getWord16le
+    rows <- getToLimit getRow packedLength
     return Pattern{..}
 
 getRow :: Get [Cell]

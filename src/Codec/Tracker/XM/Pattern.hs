@@ -67,7 +67,7 @@ getPattern = label "XM.Pattern" $ do
     packingType <- getWord8
     numRows <- getWord16le
     packedSize <- getWord16le
-    patternData <- replicateM (fromIntegral packedSize) getCell
+    patternData <- getToLimit getCell packedSize
     return Pattern{..}
 
 putPattern :: Pattern -> Put
