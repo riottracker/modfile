@@ -5,6 +5,7 @@ module Main (main) where
 import           Control.Monad
 import           Data.Binary.Get
 import qualified Data.ByteString.Lazy as BL
+import           Data.Maybe
 
 import           Codec.Tracker.XM
 import           Codec.Tracker.XM.Header
@@ -31,10 +32,15 @@ pprintHeader Header{..} = do
     putStrLn $ "Initial speed...: " ++ show initialSpeed
     putStrLn $ "Initial tempo...: " ++ show initialTempo
 
+showCell :: Cell -> IO ()
+showCell Cell{..} = case note of
+                      Just n -> putStrLn $ (show n) ++  ":" ++ (fromMaybe "" (show <$> instrument)) 
+                      Nothing -> return ()
+
 pprintPattern :: Pattern -> IO ()
 pprintPattern Pattern{..} = do
     putStrLn $ "Packed size: " ++ show packedSize ++ "  Rows: " ++ show numRows
-    print patternData
+    mapM_ showCell patternData
 
 main :: IO ()
 main = do
