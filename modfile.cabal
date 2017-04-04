@@ -49,24 +49,29 @@ test-suite modfile-test
 
 executable example-readit
   main-is:             readIT.hs
+  ghc-options:         -Wall
   build-depends:       base >= 4.7 && < 5
                      , modfile
                      , binary
+                     , split
                      , bytestring
   hs-source-dirs:      examples
   default-language:    Haskell2010
 
 executable example-readxm
   main-is:             readXM.hs
+  ghc-options:         -Wall
   build-depends:       base >= 4.7 && < 5
                      , modfile
                      , binary
                      , bytestring
+                     , split
   hs-source-dirs:      examples
   default-language:    Haskell2010
 
 executable example-reads3m
   main-is:             readS3M.hs
+  ghc-options:         -Wall
   build-depends:       base >= 4.7 && < 5
                      , modfile
                      , binary

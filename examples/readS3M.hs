@@ -2,11 +2,11 @@
 
 module Main (main) where
 
-import           Control.Applicative
 import           Control.Monad
 import           Data.Binary.Get
-import           Data.Maybe
 import qualified Data.ByteString.Lazy as BL
+import           Data.List
+import           Text.Printf
 
 import           Codec.Tracker.S3M
 import           Codec.Tracker.S3M.Header
@@ -46,10 +46,17 @@ pprintHeader Header{..} = do
     putStrLn $ "Mix volume......: " ++ show mixVolume
     putStrLn $ "Channel settings: " ++ show channelSettings
 
+showCell :: Cell -> String
+showCell Cell{..} = (maybe "---" (printf "%03d")       note) ++ " "
+                 ++ (maybe ".."  (printf "%02X") instrument) ++ " "
+                 ++ (maybe ".."  (printf "%02X")     volume) ++ " "
+                 ++ (maybe "..." printCommand       command)
+  where printCommand c = printf "%1X%02X" (cmd c) (val c)
+
 pprintPattern :: Pattern -> IO ()
 pprintPattern Pattern{..} = do
     putStrLn $ "Packed length: " ++ show packedLength
--- TODO
+    mapM_ putStrLn (map (foldr (++) ([])) (map (intersperse " | ") (map (map showCell) rows))) 
 
 main :: IO ()
 main = do
@@ -64,4 +71,9 @@ main = do
     putStrLn "Instruments:"
     putStrLn "============"
     mapM_ pprintInstrument (instruments s3m)
-    
+    putStrLn "<>"
+    putStrLn "Patterns:"
+    putStrLn "========="
+    mapM_ pprintPattern (patterns s3m)
+    putStrLn "<>"
+ 

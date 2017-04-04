@@ -2,15 +2,21 @@
 
 module Main (main) where
 
-import           Control.Monad
 import           Data.Binary.Get
 import qualified Data.ByteString.Lazy as BL
-import           Data.Maybe
+import           Data.List
+import           Data.List.Split
+import           Text.Printf
 
 import           Codec.Tracker.XM
 import           Codec.Tracker.XM.Header
 import           Codec.Tracker.XM.Instrument
 import           Codec.Tracker.XM.Pattern
+
+n2key :: Int -> String
+n2key 97 = "###"
+n2key n  = ((cycle notes) !! (n - 1)) ++ (show $ div n 12)
+  where notes = ["C ","C#","D ","D#","E ","F ","F#","G ","G#","A ","A#","B "]
 
 pprintInstrument :: Instrument -> IO ()
 pprintInstrument Instrument{..} = do
@@ -32,15 +38,18 @@ pprintHeader Header{..} = do
     putStrLn $ "Initial speed...: " ++ show initialSpeed
     putStrLn $ "Initial tempo...: " ++ show initialTempo
 
-showCell :: Cell -> IO ()
-showCell Cell{..} = case note of
-                      Just n -> putStrLn $ (show n) ++  ":" ++ (fromMaybe "" (show <$> instrument)) 
-                      Nothing -> return ()
+showCell :: Cell -> String
+showCell Cell{..} = (maybe "---" (printf "%3s" . n2key . fromIntegral) note) ++ " "
+                 ++ (maybe ".."  (printf "%02X")                 instrument) ++ " "
+                 ++ (maybe ".."  (printf "%02X")                     volume) ++ " "
+                 ++ (maybe "."   (printf "%1X")                  effectType)
+                 ++ (maybe ".."  (printf "%2X")                 effectParam)
 
-pprintPattern :: Pattern -> IO ()
-pprintPattern Pattern{..} = do
+pprintPattern :: Int -> Pattern -> IO ()
+pprintPattern n Pattern{..} = do
     putStrLn $ "Packed size: " ++ show packedSize ++ "  Rows: " ++ show numRows
-    mapM_ showCell patternData
+    mapM_ putStrLn (map (foldr (++) ([])) (map (intersperse " | ") (chunksOf n (map showCell patternData))))
+
 
 main :: IO ()
 main = do
@@ -58,5 +67,5 @@ main = do
     putStrLn "<>"
     putStrLn "Patterns:"
     putStrLn "========="
-    mapM_ pprintPattern (patterns xm)
+    mapM_ (pprintPattern $ fromIntegral . numChannels . header $ xm) (patterns xm)
     putStrLn "<>"

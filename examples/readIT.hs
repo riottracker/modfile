@@ -2,15 +2,28 @@
 
 module Main (main) where
 
-import           Control.Monad
 import           Data.Binary.Get
 import qualified Data.ByteString.Lazy as BL
+import           Data.List
+import           Text.Printf
 
 import           Codec.Tracker.IT
 import           Codec.Tracker.IT.Header
 import           Codec.Tracker.IT.Instrument
 import           Codec.Tracker.IT.Pattern
 
+n2key :: Int -> String
+n2key 255 = "###"
+n2key 254 = "///"
+n2key n   = ((cycle notes) !! n) ++ (show $ div n 12)
+  where notes = ["C ","C#","D ","D#","E ","F ","F#","G ","G#","A ","A#","B "]
+
+showCell :: Cell -> String
+showCell Cell{..} = (maybe "---"     (printf "%3s" . n2key . fromIntegral) note) ++ " "
+                 ++ (maybe ".."      (printf "%02X")                 instrument) ++ " "
+                 ++ (maybe ".."      (printf "%02X")                     volpan) ++ " "
+                 ++ (maybe "..."     printCommand                       command)
+  where printCommand c = printf "%1X%02X" (cmd c) (val c)
 
 pprintInstrument :: Instrument -> IO ()
 pprintInstrument Instrument{..} = do
@@ -33,7 +46,7 @@ pprintHeader Header{..} = do
 pprintPattern :: Pattern -> IO ()
 pprintPattern Pattern{..} = do
     putStrLn $ "Length: " ++ show patternLength ++ "  Rows: " ++ show numRows
-    print rows
+    mapM_ putStrLn (map (foldr (++) ([])) (map (intersperse " | ") (map (map showCell) rows)))
 
 main :: IO ()
 main = do
