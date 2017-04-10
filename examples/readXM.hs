@@ -38,17 +38,10 @@ pprintHeader Header{..} = do
     putStrLn $ "Initial speed...: " ++ show initialSpeed
     putStrLn $ "Initial tempo...: " ++ show initialTempo
 
-showCell :: Cell -> String
-showCell Cell{..} = (maybe "---" (printf "%3s" . n2key . fromIntegral) note) ++ " "
-                 ++ (maybe ".."  (printf "%02X")                 instrument) ++ " "
-                 ++ (maybe ".."  (printf "%02X")                     volume) ++ " "
-                 ++ (maybe "."   (printf "%1X")                  effectType)
-                 ++ (maybe ".."  (printf "%2X")                 effectParam)
-
 pprintPattern :: Int -> Pattern -> IO ()
 pprintPattern n Pattern{..} = do
     putStrLn $ "Packed size: " ++ show packedSize ++ "  Rows: " ++ show numRows
-    mapM_ putStrLn (map (foldr (++) ([])) (map (intersperse " | ") (chunksOf n (map showCell patternData))))
+    mapM_ putStrLn (map (foldr (++) ([])) (map (intersperse " | ") (chunksOf n (map show patternData))))
 
 
 main :: IO ()

@@ -46,17 +46,10 @@ pprintHeader Header{..} = do
     putStrLn $ "Mix volume......: " ++ show mixVolume
     putStrLn $ "Channel settings: " ++ show channelSettings
 
-showCell :: Cell -> String
-showCell Cell{..} = (maybe "---" (printf "%03d")       note) ++ " "
-                 ++ (maybe ".."  (printf "%02X") instrument) ++ " "
-                 ++ (maybe ".."  (printf "%02X")     volume) ++ " "
-                 ++ (maybe "..." printCommand       command)
-  where printCommand c = printf "%1X%02X" (cmd c) (val c)
-
 pprintPattern :: Pattern -> IO ()
 pprintPattern Pattern{..} = do
     putStrLn $ "Packed length: " ++ show packedLength
-    mapM_ putStrLn (map (foldr (++) ([])) (map (intersperse " | ") (map (map showCell) rows))) 
+    mapM_ putStrLn (map (foldr (++) ([])) (map (intersperse " | ") (map (map show) rows))) 
 
 main :: IO ()
 main = do

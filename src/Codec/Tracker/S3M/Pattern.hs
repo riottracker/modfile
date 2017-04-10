@@ -16,6 +16,7 @@ import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Bits
+import           Text.Printf
 
 import           Util
 
@@ -26,7 +27,13 @@ data Cell = Cell { mask       :: Word8
                  , volume     :: Maybe Word8
                  , command    :: Maybe Command
                  }
-    deriving (Show, Eq)
+    deriving (Eq)
+
+instance Show Cell where
+    show Cell{..} = (maybe "---" (printf "%03d")       note) ++ " "
+                 ++ (maybe ".."  (printf "%02X") instrument) ++ " "
+                 ++ (maybe ".."  (printf "%02X")     volume) ++ " "
+                 ++ (maybe "..." show               command)
 
 channel :: Cell -> Word8
 channel = flip (foldl clearBit . mask) [5..7]
@@ -39,7 +46,10 @@ data Pattern = Pattern { packedLength  :: Word16
 data Command = Command { cmd :: Word8
                        , val :: Word8
                        }
-    deriving (Show, Eq)
+    deriving (Eq)
+
+instance Show Command where
+    show Command{..} = printf "%1X%02x" cmd val
 
 getCommand :: Get Command
 getCommand = label "S3M.Pattern Command" $

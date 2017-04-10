@@ -15,6 +15,7 @@ import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Bits
+import           Text.Printf
 
 import           Util
 
@@ -22,7 +23,10 @@ import           Util
 data Command = Command { cmd :: Word8
                        , val :: Word8
                        }
-    deriving (Show, Eq)
+    deriving (Eq)
+
+instance Show Command where
+    show Command{..} = printf "%1X%02X" cmd val
 
 getCommand :: Get Command
 getCommand = label "IT.Pattern Command" $
@@ -39,7 +43,21 @@ data Cell = Cell { channel    :: Word8
                  , volpan     :: Maybe Word8
                  , command    :: Maybe Command
                  }
-    deriving (Show, Eq)
+    deriving (Eq)
+
+-- TODO: common note type
+n2key :: Int -> String
+n2key 255 = "###"
+n2key 254 = "///"
+n2key n   = ((cycle notes) !! n) ++ (show $ div n 12)
+  where notes = ["C ","C#","D ","D#","E ","F ","F#","G ","G#","A ","A#","B "]
+
+instance Show Cell where
+    show Cell{..} = (maybe "---"  (printf "%3s" . n2key . fromIntegral) note) ++ " "
+                 ++ (maybe ".."   (printf "%02X")                 instrument) ++ " "
+                 ++ (maybe ".."   (printf "%02X")                     volpan) ++ " "
+                 ++ (maybe "..."  show                               command)
+
 
 emptyCell :: Cell
 emptyCell = Cell 0 0 Nothing Nothing Nothing Nothing

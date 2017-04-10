@@ -15,6 +15,7 @@ import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Bits
 import           Data.Maybe
+import           Text.Printf
 
 import           Util
 
@@ -25,7 +26,21 @@ data Cell = Cell { note        :: Maybe Word8
                  , effectType  :: Maybe Word8
                  , effectParam :: Maybe Word8
                  }
-             deriving (Show, Eq)
+             deriving (Eq)
+
+
+-- TODO: common note type
+n2key :: Int -> String
+n2key 97 = "###"
+n2key n  = ((cycle notes) !! (n - 1)) ++ (show $ div n 12)
+  where notes = ["C ","C#","D ","D#","E ","F ","F#","G ","G#","A ","A#","B "]
+
+instance Show Cell where
+    show Cell{..} = (maybe "---" (printf "%3s" . n2key . fromIntegral) note) ++ " "
+                 ++ (maybe ".."  (printf "%02X")                 instrument) ++ " "
+                 ++ (maybe ".."  (printf "%02X")                     volume) ++ " "
+                 ++ (maybe "."   (printf "%1X")                  effectType)
+                 ++ (maybe ".."  (printf "%2X")                 effectParam)
 
 data Pattern = Pattern { headerLength  :: Word32
                        , packingType   :: Word8
