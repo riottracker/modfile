@@ -4,6 +4,7 @@ module Codec.Tracker.S3M.Pattern (
       Pattern (..)
     , Command (..)
     , Cell (..)
+    , Note (..)
     , channel
     , emptyCell
     , getPattern
@@ -18,19 +19,30 @@ import           Data.Binary.Put
 import           Data.Bits
 import           Text.Printf
 
+import           Codec.Tracker.Common
+
 import           Util
 
 
 data Cell = Cell { mask       :: Word8
-                 , note       :: Maybe Word8
+                 , note       :: Maybe Note
                  , instrument :: Maybe Word8
                  , volume     :: Maybe Word8
                  , command    :: Maybe Command
                  }
     deriving (Eq)
 
+instance Enum Note where
+  toEnum n
+    | n < 254  = Note $ toEnum n
+    | n == 254 = NoteCut
+    | n == 255 = NoteOff
+  fromEnum (Note p) = fromEnum p
+  fromEnum NoteCut  = 254
+  fromEnum NoteOff  = 255
+
 instance Show Cell where
-    show Cell{..} = (maybe "---" (printf "%03d")       note) ++ " "
+    show Cell{..} = (maybe "---" show                  note) ++ " "
                  ++ (maybe ".."  (printf "%02X") instrument) ++ " "
                  ++ (maybe ".."  (printf "%02X")     volume) ++ " "
                  ++ (maybe "..." show               command)
@@ -69,7 +81,7 @@ getCell = label "S3M.Pattern Cell" $
       if mask == 0 then
           return Nothing
       else do
-        n <- getByMask mask 5 getWord8
+        n <- getByMask mask 5 (toEnum . fromIntegral <$> getWord8)
         i <- getByMask mask 5 getWord8
         v <- getByMask mask 6 getWord8
         c <- getByMask mask 7 getCommand
@@ -78,7 +90,7 @@ getCell = label "S3M.Pattern Cell" $
 putCell :: Maybe Cell -> Put
 putCell Nothing         = putWord8 0
 putCell (Just Cell{..}) = putWord8 mask
-                       >> maybe (return ()) putWord8 note
+                       >> maybe (return ()) putWord8 (toEnum . fromEnum <$> note)
                        >> maybe (return ()) putWord8 instrument
                        >> maybe (return ()) putWord8 volume
                        >> maybe (return ()) putCommand command

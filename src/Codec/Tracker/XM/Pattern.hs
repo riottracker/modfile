@@ -4,6 +4,7 @@
 module Codec.Tracker.XM.Pattern (
       Pattern (..)
     , Cell (..)
+    , Note (..)
     , getPattern
     , putPattern
     ) where
@@ -17,10 +18,12 @@ import           Data.Bits
 import           Data.Maybe
 import           Text.Printf
 
+import           Codec.Tracker.Common
+
 import           Util
 
 
-data Cell = Cell { note        :: Maybe Word8
+data Cell = Cell { note        :: Maybe Note
                  , instrument  :: Maybe Word8
                  , volume      :: Maybe Word8
                  , effectType  :: Maybe Word8
@@ -29,18 +32,19 @@ data Cell = Cell { note        :: Maybe Word8
              deriving (Eq)
 
 
--- TODO: common note type
-n2key :: Int -> String
-n2key 97 = "###"
-n2key n  = ((cycle notes) !! (n - 1)) ++ (show $ div n 12)
-  where notes = ["C ","C#","D ","D#","E ","F ","F#","G ","G#","A ","A#","B "]
+instance Enum Note where
+  toEnum n
+    | n > 0 && n <= 96 = Note $ toEnum (n - 1)
+    | n == 97          = NoteOff
+  fromEnum (Note p) = 1 + fromEnum p
+  fromEnum NoteOff  = 97
 
 instance Show Cell where
-    show Cell{..} = (maybe "---" (printf "%3s" . n2key . fromIntegral) note) ++ " "
-                 ++ (maybe ".."  (printf "%02X")                 instrument) ++ " "
-                 ++ (maybe ".."  (printf "%02X")                     volume) ++ " "
-                 ++ (maybe "."   (printf "%1X")                  effectType)
-                 ++ (maybe ".."  (printf "%2X")                 effectParam)
+    show Cell{..} = (maybe "---" show                  note) ++ " "
+                 ++ (maybe ".."  (printf "%02X") instrument) ++ " "
+                 ++ (maybe ".."  (printf "%02X")     volume) ++ " "
+                 ++ (maybe "."   (printf "%1X")  effectType)
+                 ++ (maybe ".."  (printf "%2X") effectParam)
 
 data Pattern = Pattern { headerLength  :: Word32
                        , packingType   :: Word8
@@ -54,14 +58,15 @@ data Pattern = Pattern { headerLength  :: Word32
 getCell :: Get Cell
 getCell = getWord8 >>=
    \n -> if not (testBit n 7)
-         then Cell (Just n) <$> (Just <$> getWord8) <*> (Just <$> getWord8)
+         then Cell (Just . toEnum . fromIntegral $ n)
+                            <$> (Just <$> getWord8) <*> (Just <$> getWord8)
                             <*> (Just <$> getWord8) <*> (Just <$> getWord8)
-         else Cell <$> getByMask n 0 getWord8 <*> getByMask n 1 getWord8 
+         else Cell <$> getByMask n 0 (toEnum . fromIntegral <$> getWord8) <*> getByMask n 1 getWord8 
                    <*> getByMask n 2 getWord8 <*> getByMask n 3 getWord8
                    <*> getByMask n 4 getWord8
 
 putCell :: Cell -> Put
-putCell (Cell (Just n) Nothing Nothing Nothing Nothing) = putWord8 n
+putCell (Cell (Just n) Nothing Nothing Nothing Nothing) = putWord8 (toEnum . fromEnum $ n)
 putCell Cell{..} = do
     putWord8 $ mask effectParam 4
              $ mask effectType  3
@@ -69,7 +74,7 @@ putCell Cell{..} = do
              $ mask instrument  1
              $ mask note        0
              $ setBit zeroBits  7
-    maybe (return ()) putWord8 note
+    maybe (return ()) putWord8 (toEnum . fromEnum <$> note)
     maybe (return ()) putWord8 instrument
     maybe (return ()) putWord8 volume
     maybe (return ()) putWord8 effectType

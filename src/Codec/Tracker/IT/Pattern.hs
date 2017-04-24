@@ -4,6 +4,7 @@ module Codec.Tracker.IT.Pattern (
       Pattern (..)
     , Cell (..)
     , Command (..)
+    , Note (..)
     , emptyCell
     , getPattern
     , getEmptyPattern
@@ -16,6 +17,8 @@ import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Bits
 import           Text.Printf
+
+import           Codec.Tracker.Common
 
 import           Util
 
@@ -38,22 +41,26 @@ putCommand Command{..} =
 
 data Cell = Cell { channel    :: Word8
                  , _mask      :: Word8
-                 , note       :: Maybe Word8
+                 , note       :: Maybe Note
                  , instrument :: Maybe Word8
                  , volpan     :: Maybe Word8
                  , command    :: Maybe Command
                  }
     deriving (Eq)
 
--- TODO: common note type
-n2key :: Int -> String
-n2key 255 = "###"
-n2key 254 = "///"
-n2key n   = ((cycle notes) !! n) ++ (show $ div n 12)
-  where notes = ["C ","C#","D ","D#","E ","F ","F#","G ","G#","A ","A#","B "]
+
+instance Enum Note where
+  toEnum n
+    | n <= 119  = Note $ toEnum n
+    | n == 254  = NoteCut
+    | n == 255  = NoteOff
+    | otherwise = NoteFade
+  fromEnum (Note p) = fromEnum p
+  fromEnum NoteCut  = 254
+  fromEnum NoteOff  = 255
 
 instance Show Cell where
-    show Cell{..} = (maybe "---"  (printf "%3s" . n2key . fromIntegral) note) ++ " "
+    show Cell{..} = (maybe "---"  show                                  note) ++ " "
                  ++ (maybe ".."   (printf "%02X")                 instrument) ++ " "
                  ++ (maybe ".."   (printf "%02X")                     volpan) ++ " "
                  ++ (maybe "..."  show                               command)
@@ -64,7 +71,7 @@ emptyCell = Cell 0 0 Nothing Nothing Nothing Nothing
 
 getCell :: Word8 -> Word8 -> [Cell] -> Get Cell
 getCell channel mask rowBuffer = label "IT.Pattern Cell" $ do
-    n <- item 4 0 getWord8 note
+    n <- item 4 0 (toEnum . fromIntegral <$> getWord8) note
     i <- item 5 1 getWord8 instrument
     v <- item 6 2 getWord8 volpan
     c <- item 7 3 getCommand command
