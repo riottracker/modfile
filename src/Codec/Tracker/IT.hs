@@ -24,6 +24,7 @@ data Module = Module { header        :: Header
                      , insOffsets    :: [Word32]
                      , smpOffsets    :: [Word32]
                      , patOffsets    :: [Word32]
+                     , message       :: [Word8]
                      , instruments   :: [Instrument]
                      , sampleHeaders :: [SampleHeader]
                      , patterns      :: [Pattern]
@@ -34,6 +35,7 @@ data Module = Module { header        :: Header
 getModule :: Get Module
 getModule = do
     header <- getHeader
+    message <- getAtOffset (replicateM (fromIntegral $ messageLength header) getWord8) $ messageOffset header
     orders <- replicateM (fromIntegral (songLength header)) getWord8
     insOffsets <- replicateM (fromIntegral (numInstruments header)) getWord32le
     smpOffsets <- replicateM (fromIntegral (numSamples header)) getWord32le

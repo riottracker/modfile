@@ -43,6 +43,8 @@ main = do
     putStrLn "======="
     pprintHeader $ header it
     putStrLn "<>"
+    putStr   "Message: "
+    BL.putStrLn $ BL.pack (message it)
     putStrLn "Instruments:"
     putStrLn "============"
     mapM_ pprintInstrument (instruments it)
