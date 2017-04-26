@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards, LambdaCase #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Codec.Tracker.S3M.Pattern (
       Pattern (..)
@@ -42,10 +42,10 @@ instance Enum Note where
   fromEnum NoteOff  = 255
 
 instance Show Cell where
-    show Cell{..} = (maybe "---" show                  note) ++ " "
-                 ++ (maybe ".."  (printf "%02X") instrument) ++ " "
-                 ++ (maybe ".."  (printf "%02X")     volume) ++ " "
-                 ++ (maybe "..." show               command)
+    show Cell{..} = maybe "---" show                  note ++ " "
+                 ++ maybe ".."  (printf "%02X") instrument ++ " "
+                 ++ maybe ".."  (printf "%02X")     volume ++ " "
+                 ++ maybe "..." show               command
 
 channel :: Cell -> Word8
 channel = flip (foldl clearBit . mask) [5..7]

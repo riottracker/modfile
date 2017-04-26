@@ -65,7 +65,7 @@ getInstrument = label "XM.Instrument" $ do
      sampleNum <- getWord16le
      extendedHeader <- sequence $ if sampleNum > 0 then Just getExtendedInstrumentHeader else Nothing
      headerEnd <- bytesRead
-     skip $ (fromIntegral instrumentSize) + (fromIntegral headerStart) - (fromIntegral headerEnd)
+     skip $ fromIntegral instrumentSize + fromIntegral headerStart - fromIntegral headerEnd
      sampleHeaders <- replicateM (fromIntegral sampleNum) getSampleHeader
      samples <- mapM getSample sampleHeaders
      return Instrument{..}

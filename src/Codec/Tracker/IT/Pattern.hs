@@ -60,10 +60,10 @@ instance Enum Note where
   fromEnum NoteOff  = 255
 
 instance Show Cell where
-    show Cell{..} = (maybe "---"  show                                  note) ++ " "
-                 ++ (maybe ".."   (printf "%02X")                 instrument) ++ " "
-                 ++ (maybe ".."   (printf "%02X")                     volpan) ++ " "
-                 ++ (maybe "..."  show                               command)
+    show Cell{..} = maybe "---"  show                  note ++ " "
+                 ++ maybe ".."   (printf "%02X") instrument ++ " "
+                 ++ maybe ".."   (printf "%02X")     volpan ++ " "
+                 ++ maybe "..."  show               command
 
 
 emptyCell :: Cell

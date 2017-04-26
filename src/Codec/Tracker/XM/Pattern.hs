@@ -1,5 +1,4 @@
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE LambdaCase      #-}
 
 module Codec.Tracker.XM.Pattern (
       Pattern (..)
@@ -36,15 +35,15 @@ instance Enum Note where
   toEnum n
     | n > 0 && n <= 96 = Note $ toEnum (n - 1)
     | n == 97          = NoteOff
-  fromEnum (Note p) = 1 + fromEnum p
-  fromEnum NoteOff  = 97
+  fromEnum (Note p)    = 1 + fromEnum p
+  fromEnum NoteOff     = 97
 
 instance Show Cell where
-    show Cell{..} = (maybe "---" show                  note) ++ " "
-                 ++ (maybe ".."  (printf "%02X") instrument) ++ " "
-                 ++ (maybe ".."  (printf "%02X")     volume) ++ " "
-                 ++ (maybe "."   (printf "%1X")  effectType)
-                 ++ (maybe ".."  (printf "%2X") effectParam)
+    show Cell{..} = maybe "---" show                  note ++ " "
+                 ++ maybe ".."  (printf "%02X") instrument ++ " "
+                 ++ maybe ".."  (printf "%02X")     volume ++ " "
+                 ++ maybe "."   (printf "%1X")  effectType
+                 ++ maybe ".."  (printf "%2X") effectParam
 
 data Pattern = Pattern { headerLength  :: Word32
                        , packingType   :: Word8
@@ -61,9 +60,9 @@ getCell = getWord8 >>=
          then Cell (Just . toEnum . fromIntegral $ n)
                             <$> (Just <$> getWord8) <*> (Just <$> getWord8)
                             <*> (Just <$> getWord8) <*> (Just <$> getWord8)
-         else Cell <$> getByMask n 0 (toEnum . fromIntegral <$> getWord8) <*> getByMask n 1 getWord8 
-                   <*> getByMask n 2 getWord8 <*> getByMask n 3 getWord8
-                   <*> getByMask n 4 getWord8
+         else Cell <$> getByMask n 0 (toEnum . fromIntegral <$> getWord8)
+                   <*> getByMask n 1 getWord8 <*> getByMask n 2 getWord8
+                   <*> getByMask n 3 getWord8 <*> getByMask n 4 getWord8
 
 putCell :: Cell -> Put
 putCell (Cell (Just n) Nothing Nothing Nothing Nothing) = putWord8 (toEnum . fromEnum $ n)

@@ -14,6 +14,7 @@ import           Data.Binary.Put
 import           Data.List.Split
 import           Data.Tuple
 
+-- | Envelope given by a list of nodes.
 data Envelope = Envelope { flag             :: Word8
                          , numNodes         :: Word8
                          , loopStart        :: Word8
@@ -25,23 +26,40 @@ data Envelope = Envelope { flag             :: Word8
                          }
     deriving (Show, Eq)
 
-data Instrument = Instrument { magicNumber           :: Word32             -- "IMPI"
-                             , fileName              :: [Word8]            -- 12 bytes
-                             , ipad0                 :: Word8
-                             , newNoteAction         :: Word8
-                             , duplicateCheckType    :: Word8
-                             , duplicateCheckAction  :: Word8
+data Instrument = Instrument { magicNumber           :: Word32             -- ^ \"IMPI\"
+                             , fileName              :: [Word8]            -- ^ 12 bytes
+                             , ipad0                 :: Word8              -- ^ padding
+                             , newNoteAction         :: Word8              -- ^ New note action:
+                                                                           --
+                                                                           --   0: cut,
+                                                                           --   1: continue,
+                                                                           --   2: note off,
+                                                                           --   3: note fade
+
+                             , duplicateCheckType    :: Word8              -- ^ Duplicate check type:
+                                                                           --
+                                                                           --   0: off,
+                                                                           --   1: note,
+                                                                           --   2: sample,
+                                                                           --   3: instrument
+
+                             , duplicateCheckAction  :: Word8              -- ^ Duplicate check action
+                                                                           --
+                                                                           --   0: cut,
+                                                                           --   1: note off,
+                                                                           --   2: note fade
+
                              , fadeOut               :: Word16
                              , pitchPanSeparation    :: Word8
                              , pitchPanCenter        :: Word8
                              , globalVolume          :: Word8
                              , defaultPan            :: Word8
-                             , ipad1                 :: [Word8]            -- 2 bytes
+                             , ipad1                 :: [Word8]            -- ^ padding (2 bytes)
                              , version               :: Word16
                              , sampleNum             :: Word8
                              , ipad2                 :: Word8
                              , name                  :: [Word8]            -- 26 bytes
-                             , ipad3                 :: [Word8]            -- 6 bytes
+                             , ipad3                 :: [Word8]            -- ^ padding (6 bytes)
                              , noteSampleTable       :: [(Word8, Word8)]   -- 240 bytes
                              , volumeEnvelope        :: Envelope
                              , panningEnvelope       :: Envelope
