@@ -1,3 +1,4 @@
+-- | Various helper functions used to read/write module files.
 module Util (
         getAtOffset
       , getByMask

@@ -22,22 +22,25 @@ import           Codec.Tracker.Common
 
 import           Util
 
-
-data Command = Command { cmd :: Word8
-                       , val :: Word8
+-- | Effect command type.
+data Command = Command { cmd :: Word8 -- ^ command type
+                       , val :: Word8 -- ^ command parameter
                        }
     deriving (Eq)
 
 instance Show Command where
     show Command{..} = printf "%1X%02X" cmd val
 
+-- | Read a `Command` from the monad state.
 getCommand :: Get Command
 getCommand = label "IT.Pattern Command" $
              Command <$> getWord8 <*> getWord8
 
+-- | Write a `Command` to the buffer.
 putCommand :: Command -> Put
 putCommand Command{..} =
     putWord8 cmd >> putWord8 val
+
 
 data Cell = Cell { channel    :: Word8
                  , _mask      :: Word8
@@ -69,7 +72,11 @@ instance Show Cell where
 emptyCell :: Cell
 emptyCell = Cell 0 0 Nothing Nothing Nothing Nothing
 
-getCell :: Word8 -> Word8 -> [Cell] -> Get Cell
+-- | Read a `Cell` from the monad state.
+getCell :: Word8      -- ^ channel index
+        -> Word8      -- ^ bitmask
+        -> [Cell]     -- ^ previous `Cell`s of each channel
+        -> Get Cell
 getCell channel mask rowBuffer = label "IT.Pattern Cell" $ do
     n <- item 4 0 (toEnum . fromIntegral <$> getWord8) note
     i <- item 5 1 getWord8 instrument
@@ -88,6 +95,7 @@ data Pattern = Pattern { patternLength  :: Word16
                        }
     deriving (Show, Eq)
 
+-- | Read a `Pattern` from the monad state.
 getPattern :: Get Pattern
 getPattern = label "IT.Pattern" $ do
     patternLength <- getWord16le
@@ -99,6 +107,7 @@ getPattern = label "IT.Pattern" $ do
 getEmptyPattern :: Get Pattern
 getEmptyPattern = return $ Pattern 0 64 [0, 0, 0, 0] (replicate 64 [])
 
+-- | Write a `Pattern` to the buffer.
 putPattern :: Pattern -> Put
 putPattern Pattern{..} = do
     putWord16le patternLength

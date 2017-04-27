@@ -26,6 +26,7 @@ data Envelope = Envelope { flag             :: Word8
                          }
     deriving (Show, Eq)
 
+-- | Impulsetracker instrument
 data Instrument = Instrument { magicNumber           :: Word32             -- ^ \"IMPI\"
                              , fileName              :: [Word8]            -- ^ 12 bytes
                              , ipad0                 :: Word8              -- ^ padding
@@ -67,20 +68,23 @@ data Instrument = Instrument { magicNumber           :: Word32             -- ^ 
                              }
     deriving (Show, Eq)
 
-
+-- | Read a single envelope node from the monad state.
 getNode :: Get (Word16, Word8)
 getNode = label "IT.Instrument Node" $
           fmap swap (liftM2 (,) getWord8 getWord16le)
 
+-- | Read an `Envelope` from the monad state.
 getEnvelope :: Get Envelope
 getEnvelope = label "IT.Instrument Envelope" $
               Envelope <$> getWord8 <*> getWord8 <*> getWord8
                        <*> getWord8 <*> getWord8 <*> getWord8
                        <*> replicateM 25 getNode <*> getWord8
 
+-- | Write single envelope node to the buffer.
 putNode :: (Word16, Word8) -> Put
 putNode (a,b) = putWord16le a >> putWord8 b
 
+-- | Write an `Envelope` to the buffer.
 putEnvelope :: Envelope -> Put
 putEnvelope Envelope{..} = do
     mapM_ putWord8 [ flag, numNodes, loopStart, loopEnd
@@ -89,6 +93,7 @@ putEnvelope Envelope{..} = do
     mapM_ putNode nodes
     putWord8 epad0
 
+-- | Read an `Instrument` from the monad state.
 getInstrument :: Get Instrument
 getInstrument = label "IT.Instrument" $
                 Instrument <$> getWord32le <*> replicateM 12 getWord8 <*> getWord8
@@ -98,11 +103,14 @@ getInstrument = label "IT.Instrument" $
                            <*> getWord8 <*> replicateM 26 getWord8 <*> replicateM 6 getWord8
                            <*> getNoteSampleTable <*> getEnvelope <*> getEnvelope <*> getEnvelope
 
+-- | Read a set of (key, sample) mappings from the monad state.
 getNoteSampleTable :: Get [(Word8, Word8)]
 getNoteSampleTable = label "IT.Instrument NoteSampleTable" $
                      fmap (l2t . chunksOf 2) (replicateM 240 getWord8)
   where l2t = map (\[a,b] -> (a,b))
 
+
+-- | Write an `Instrument` to the buffer.
 putInstrument :: Instrument -> Put
 putInstrument Instrument{..} = do
     putWord32le magicNumber

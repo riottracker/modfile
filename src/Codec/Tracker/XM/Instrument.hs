@@ -16,11 +16,10 @@ import           Codec.Tracker.XM.SampleHeader
 
 
 data Instrument = Instrument { instrumentSize :: Word32
-                             , instrumentName :: [Word8]    -- 22 bytes
+                             , instrumentName :: [Word8]                         -- ^ 22 bytes
                              , instrumentType :: Word8
-                             , sampleNum      :: Word16
--- if numSamples > 0
-                             , extendedHeader :: Maybe ExtendedInstrumentHeader
+                             , sampleNum      :: Word16                          -- ^ number of samples used
+                             , extendedHeader :: Maybe ExtendedInstrumentHeader  -- ^ if numSamples > 0
                              , samples        :: [(SampleHeader, [Word8])]
                              }
     deriving (Show, Eq)
@@ -48,6 +47,7 @@ data ExtendedInstrumentHeader = ExtendedInstrumentHeader { sampleHeaderSize :: W
                                                          }
                                                        deriving (Show, Eq)
 
+-- | Read an `ExtendedInstrumentHeader` from the monad state.
 getExtendedInstrumentHeader :: Get ExtendedInstrumentHeader
 getExtendedInstrumentHeader = ExtendedInstrumentHeader <$> getWord32le <*> replicateM 96 getWord8
                                                        <*> replicateM 48 getWord8 <*> replicateM 48 getWord8
@@ -56,6 +56,7 @@ getExtendedInstrumentHeader = ExtendedInstrumentHeader <$> getWord32le <*> repli
                                                        <*> getWord8 <*> getWord8 <*> getWord8 <*> getWord8
                                                        <*> getWord8 <*> getWord8 <*> getWord16le <*> getWord16le
 
+-- | Read an `Instrument` from the monad state.
 getInstrument :: Get Instrument
 getInstrument = label "XM.Instrument" $ do
      headerStart <- bytesRead
@@ -70,9 +71,11 @@ getInstrument = label "XM.Instrument" $ do
      samples <- mapM getSample sampleHeaders
      return Instrument{..}
 
+-- | Read the sample data for a `SampleHeader` and return a pair.
 getSample :: SampleHeader -> Get (SampleHeader, [Word8])
 getSample h = fmap (h ,) (replicateM (fromIntegral (sampleLength h)) getWord8)
 
+-- | Write an `Instrument` to the buffer.
 putInstrument :: Instrument -> Put
 putInstrument Instrument{..} = do
     putWord32le instrumentSize

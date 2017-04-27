@@ -54,6 +54,7 @@ data Pattern = Pattern { headerLength  :: Word32
                    deriving (Show, Eq)
 
 
+-- | Read a `Cell` from the monad state.
 getCell :: Get Cell
 getCell = getWord8 >>=
    \n -> if not (testBit n 7)
@@ -64,6 +65,7 @@ getCell = getWord8 >>=
                    <*> getByMask n 1 getWord8 <*> getByMask n 2 getWord8
                    <*> getByMask n 3 getWord8 <*> getByMask n 4 getWord8
 
+-- | Write a `Cell` to the buffer.
 putCell :: Cell -> Put
 putCell (Cell (Just n) Nothing Nothing Nothing Nothing) = putWord8 (toEnum . fromEnum $ n)
 putCell Cell{..} = do
@@ -80,6 +82,7 @@ putCell Cell{..} = do
     maybe (return ()) putWord8 effectParam
   where mask f n m = if isJust f then setBit m n else m
 
+-- | Read a `Pattern` from the monad state.
 getPattern :: Get Pattern
 getPattern = label "XM.Pattern" $ do
     headerLength <- getWord32le
@@ -89,6 +92,7 @@ getPattern = label "XM.Pattern" $ do
     patternData <- getToLimit getCell packedSize
     return Pattern{..}
 
+-- | Write a `Pattern` to the buffer.
 putPattern :: Pattern -> Put
 putPattern Pattern{..} = do
     putWord32le headerLength

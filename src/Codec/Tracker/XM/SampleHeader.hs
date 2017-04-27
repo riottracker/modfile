@@ -31,6 +31,7 @@ data Sample = Sample { sampleHeader :: SampleHeader
                      }
                  deriving (Show, Eq)
 
+-- | Read a `SampleHeader` from the monad state.
 getSampleHeader :: Get SampleHeader
 getSampleHeader = label "XM.Sample SampleHeader" $
                   SampleHeader <$> getWord32le <*> getWord32le <*> getWord32le
@@ -38,6 +39,7 @@ getSampleHeader = label "XM.Sample SampleHeader" $
                                <*> getWord8 <*> getWord8 <*> getWord8
                                <*> replicateM 22 getWord8
 
+-- | Write a `SampleHeader` to the buffer.
 putSampleHeader :: SampleHeader -> Put
 putSampleHeader SampleHeader{..} = do
     mapM_ putWord32le [sampleLength, loopStart, loopLength]

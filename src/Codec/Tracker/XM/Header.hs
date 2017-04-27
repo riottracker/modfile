@@ -12,23 +12,24 @@ import           Data.Binary.Get
 import           Data.Binary.Put
 
  
-data Header = Header { idText          :: [Word8]    -- 17 bytes: "Extended module: "
-                     , songName        :: [Word8]    -- 20 bytes
-                     , hpad0           :: Word8
-                     , trackerName     :: [Word8]    -- 20 bytes
+data Header = Header { idText          :: [Word8]    -- ^ 17 bytes: "Extended module: "
+                     , songName        :: [Word8]    -- ^ 20 bytes
+                     , hpad0           :: Word8      -- ^ padding
+                     , trackerName     :: [Word8]    -- ^ 20 bytes
                      , version         :: Word16
                      , headerSize      :: Word32
-                     , songLength      :: Word16     -- number of entries in pattern order table
+                     , songLength      :: Word16     -- ^ number of entries in pattern order table
                      , restartPosition :: Word16
-                     , numChannels     :: Word16
-                     , numPatterns     :: Word16
-                     , numInstruments  :: Word16
-                     , flags           :: Word16    -- bit 0: use linear freq. table
-                     , initialSpeed    :: Word16
-                     , initialTempo    :: Word16
+                     , numChannels     :: Word16     -- ^ number of channels
+                     , numPatterns     :: Word16     -- ^ number of patterns
+                     , numInstruments  :: Word16     -- ^ number of instruments
+                     , flags           :: Word16     -- ^ bit 0: use linear freq. table
+                     , initialSpeed    :: Word16     -- ^ initial speed
+                     , initialTempo    :: Word16     -- ^ initial tempo
                      }
     deriving (Show, Eq)
 
+-- | Read a `Header` from the monad state.
 getHeader :: Get Header
 getHeader = label "XM.Header" $
             Header <$> replicateM 17 getWord8 
@@ -46,6 +47,7 @@ getHeader = label "XM.Header" $
                    <*> getWord16le
                    <*> getWord16le
 
+-- | Write a `Header` to the buffer.
 putHeader :: Header -> Put
 putHeader Header{..} = do
     mapM_ putWord8 (idText ++ songName ++ [hpad0] ++ trackerName)
