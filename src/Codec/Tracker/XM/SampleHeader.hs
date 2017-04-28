@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- | read/write Fasttracker II samples
 module Codec.Tracker.XM.SampleHeader
     ( getSampleHeader
     , putSampleHeader
@@ -12,7 +13,7 @@ import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
 
-
+-- | Fasttracker II sample header
 data SampleHeader = SampleHeader { sampleLength   :: Word32
                                  , loopStart      :: Word32
                                  , loopLength     :: Word32
@@ -26,6 +27,7 @@ data SampleHeader = SampleHeader { sampleLength   :: Word32
                                  }
                              deriving (Show, Eq)
 
+-- | Fasttracker II sample
 data Sample = Sample { sampleHeader :: SampleHeader
                      , sampleData   :: [Word8]
                      }

@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- | read/write Scream Tracker 3 files
 module Codec.Tracker.S3M (
       Module (..)
     , getModule
@@ -17,7 +18,7 @@ import           Codec.Tracker.S3M.Pattern
 
 import           Util
 
-
+-- | A Scream Tracker 3 module
 data Module = Module { header      :: Header
                      , orders      :: [Word8]
                      , insOffsets  :: [Word16]
@@ -28,7 +29,7 @@ data Module = Module { header      :: Header
                      }
     deriving (Show, Eq)
 
-
+-- | Read a `Module` from the monad state.
 getModule :: Get Module
 getModule = do
     header <- getHeader
@@ -40,6 +41,7 @@ getModule = do
     patterns <- mapM (getAtOffset getPattern . (16*)) patOffsets
     return Module{..}
 
+-- | Write a `Module` to the buffer.
 putModule :: Module -> Put
 putModule Module{..} = do
     putHeader header

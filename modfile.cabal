@@ -32,7 +32,8 @@ library
                      , Codec.Tracker.S3M.Instrument.PCM
                      , Codec.Tracker.S3M.Instrument.Adlib
                      , Codec.Tracker.S3M.Pattern
-  other-modules:       Util, Codec.Tracker.Common
+                     , Codec.Tracker.Common
+  other-modules:       Util
   build-depends:       base >= 4.7 && < 5
                      , binary
                      , bytestring

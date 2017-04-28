@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- | read/write ImpulseTracker files
 module Codec.Tracker.IT (
       Module(..)
     , getModule
@@ -19,6 +20,7 @@ import           Codec.Tracker.IT.Sample
 import           Util
 
 
+-- | An ImpulseTracker module
 data Module = Module { header        :: Header
                      , orders        :: [Word8]
                      , insOffsets    :: [Word32]
@@ -32,6 +34,7 @@ data Module = Module { header        :: Header
     deriving (Show, Eq)
 
 
+-- | Read a `Module` from the monad state.
 getModule :: Get Module
 getModule = do
     header <- getHeader
@@ -48,6 +51,7 @@ getModule = do
                          | x <- patOffsets ]
     return Module{..}
 
+-- | Write a `Module` to the buffer.
 putModule :: Module -> Put
 putModule Module{..} = do
     putHeader header

@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards, TupleSections #-}
 
+-- | read/write Fasttracker II instruments
 module Codec.Tracker.XM.Instrument (
       Instrument (..)
     , ExtendedInstrumentHeader (..)
@@ -14,16 +15,17 @@ import           Data.Binary.Put
 
 import           Codec.Tracker.XM.SampleHeader
 
-
+-- | Instrument
 data Instrument = Instrument { instrumentSize :: Word32
                              , instrumentName :: [Word8]                         -- ^ 22 bytes
-                             , instrumentType :: Word8
+                             , instrumentType :: Word8                           -- ^ always zero?
                              , sampleNum      :: Word16                          -- ^ number of samples used
                              , extendedHeader :: Maybe ExtendedInstrumentHeader  -- ^ if numSamples > 0
                              , samples        :: [(SampleHeader, [Word8])]
                              }
     deriving (Show, Eq)
 
+-- | Used if there is at least one sample associated with the `Instrument`.
 data ExtendedInstrumentHeader = ExtendedInstrumentHeader { sampleHeaderSize :: Word32
                                                          , keymap           :: [Word8]
                                                          , volumeEnvelope   :: [Word8]

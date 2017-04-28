@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- | read/write ImpulseTracker imstruments
 module Codec.Tracker.IT.Instrument (
       Instrument (..)
     , Envelope (..)

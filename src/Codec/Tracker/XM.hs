@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- | read/write Fasttracker II files
 module Codec.Tracker.XM (
       Module (..)
     , getModule
@@ -14,7 +15,7 @@ import           Codec.Tracker.XM.Header
 import           Codec.Tracker.XM.Instrument
 import           Codec.Tracker.XM.Pattern
 
-
+-- | A Fasttracker II module
 data Module = Module { header      :: Header
                      , orders      :: [Word8]
                      , patterns    :: [Pattern]
@@ -22,6 +23,7 @@ data Module = Module { header      :: Header
                      }
     deriving (Show, Eq)
 
+-- | Read a `Module` from the monad state.
 getModule :: Get Module
 getModule = do
     header <- getHeader
@@ -32,6 +34,7 @@ getModule = do
     instruments <- replicateM (fromIntegral (numInstruments header)) getInstrument
     return Module{..}
 
+-- | Write a `Module` to the buffer.
 putModule :: Module -> Put
 putModule Module{..} = do
     putHeader header

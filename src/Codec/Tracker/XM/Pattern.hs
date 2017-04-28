@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- | read/write Fasttracker II patterns
 module Codec.Tracker.XM.Pattern (
       Pattern (..)
     , Cell (..)
@@ -22,6 +23,7 @@ import           Codec.Tracker.Common
 import           Util
 
 
+-- | Song event
 data Cell = Cell { note        :: Maybe Note
                  , instrument  :: Maybe Word8
                  , volume      :: Maybe Word8
@@ -45,6 +47,7 @@ instance Show Cell where
                  ++ maybe "."   (printf "%1X")  effectType
                  ++ maybe ".."  (printf "%2X") effectParam
 
+-- | A Fasttracker II pattern
 data Pattern = Pattern { headerLength  :: Word32
                        , packingType   :: Word8
                        , numRows       :: Word16

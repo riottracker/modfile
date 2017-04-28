@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- | module formats
 module Codec.Tracker.Format ( Format (..)
                             , detect
                             ) where

@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- | read/write PCM samples from Scream Tracker 3 modules
 module Codec.Tracker.S3M.Instrument.PCM (
       PCMSample(..)
     , getPCMSample
@@ -13,6 +14,7 @@ import           Data.Binary.Put
 import           Data.Bits
 
 
+-- | PCM sample
 data PCMSample = PCMSample { ptrDataH     :: Word8
                            , ptrDataL     :: Word16
                            , sampleLength :: Word32
@@ -23,13 +25,14 @@ data PCMSample = PCMSample { ptrDataH     :: Word8
                            , packed       :: Word8
                            , flags        :: Word8
                            , c2spd        :: Word32
-                           , internal     :: [Word8]  -- 12 bytes
-                           , title        :: [Word8]  -- 28 bytes
-                           , sig          :: [Word8]  -- 4 bytes "SCRS" 
+                           , internal     :: [Word8]  -- ^ 12 bytes
+                           , title        :: [Word8]  -- ^ 28 bytes
+                           , sig          :: [Word8]  -- ^ 4 bytes "SCRS" 
                            , sampleData   :: [Word8]
                            }
     deriving (Show, Eq)
 
+-- | Read a `PCMSample` from the monad state.
 getPCMSample :: Get PCMSample
 getPCMSample = label "S3M.Instrument.PCM" $ do
      ptrDataH <- getWord8
@@ -50,6 +53,7 @@ getPCMSample = label "S3M.Instrument.PCM" $ do
      sampleData <- lookAhead $ skip (offset - fromIntegral br) >> replicateM (fromIntegral sampleLength) getWord8
      return PCMSample{..}
 
+-- | Write a `PCMSample` to the buffer.
 putPCMSample :: PCMSample -> Put
 putPCMSample PCMSample{..} = do
      putWord8 ptrDataH

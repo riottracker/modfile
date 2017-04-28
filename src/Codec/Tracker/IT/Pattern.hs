@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- | read/write ImpulseTracker patterns
 module Codec.Tracker.IT.Pattern (
       Pattern (..)
     , Cell (..)
@@ -42,6 +43,7 @@ putCommand Command{..} =
     putWord8 cmd >> putWord8 val
 
 
+-- | Song events.
 data Cell = Cell { channel    :: Word8
                  , _mask      :: Word8
                  , note       :: Maybe Note
@@ -68,7 +70,7 @@ instance Show Cell where
                  ++ maybe ".."   (printf "%02X")     volpan ++ " "
                  ++ maybe "..."  show               command
 
-
+-- | An empty `Cell`
 emptyCell :: Cell
 emptyCell = Cell 0 0 Nothing Nothing Nothing Nothing
 
@@ -88,6 +90,7 @@ getCell channel mask rowBuffer = label "IT.Pattern Cell" $ do
                          then pure (a lastCell)
                          else getByMask mask b2 g
 
+-- | ImpulseTracker `Pattern`
 data Pattern = Pattern { patternLength  :: Word16
                        , numRows        :: Word16
                        , ppad0          :: [Word8]           -- 4 bytes
@@ -104,6 +107,7 @@ getPattern = label "IT.Pattern" $ do
     rows <- fmap (map fst) (getRows (fromIntegral numRows))
     return Pattern{..}
 
+-- | Empty 64 row `Pattern`
 getEmptyPattern :: Get Pattern
 getEmptyPattern = return $ Pattern 0 64 [0, 0, 0, 0] (replicate 64 [])
 

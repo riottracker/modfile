@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- | read/write ImpulseTracker file headers
 module Codec.Tracker.IT.Header (
       Header (..)
     , getHeader
@@ -10,7 +11,8 @@ import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
- 
+
+-- | ImpulseTracker file header
 data Header = Header { magicString    :: Word32     -- ^ \"IMPM\" starting at v2.03
                      , songName       :: [Word8]    -- ^ 26 bytes
                      , hpad0          :: [Word8]    -- ^ padding (2 bytes)
@@ -38,10 +40,10 @@ data Header = Header { magicString    :: Word32     -- ^ \"IMPM\" starting at v2
                                                     --
                                                     --   bits 1-15: undefined
                      , globalVolume   :: Word8      -- ^ global volume
-                     , mixVolume      :: Word8      -- ^ 
+                     , mixVolume      :: Word8
                      , initialSpeed   :: Word8      -- ^ initial speed
                      , initialTempo   :: Word8      -- ^ initial tempo
-                     , panSeparation  :: Word8      -- ^ 
+                     , panSeparation  :: Word8
                      , hpad1          :: Word8      -- ^ padding
                      , messageLength  :: Word16
                      , messageOffset  :: Word32
