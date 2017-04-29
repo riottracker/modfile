@@ -13,30 +13,30 @@ import           Data.Binary.Get
 import           Data.Binary.Put
 
 -- | Scream Tracker 3 file header 
-data Header = Header { songName        :: [Word8]    -- ^ song name (28 bytes)
-                     , hpad0           :: Word8      -- ^ should be 0x1a for scream tracker 3 modules
-                     , magicByte       :: Word8      -- ^ should be 0x10 for scream tracker 3 modules
-                     , hpad1           :: Word16     -- ^ padding
-                     , songLength       :: Word16    -- ^ number of entries in pattern order table
-                     , numInstruments   :: Word16    -- ^ number of instruments
-                     , numPatterns      :: Word16    -- ^ number of patterns
-                     , flags            :: Word16    -- ^ bit 0: scream tracker 2 vibrato, bit 1: scream tracker 2 tempo,
-                                                     --   bit 2: amiga slides, bit 3: turn of looping notes when volume is zero for more than two rows,
-                                                     --   bit 4: amiga limits, bit 5: soundblaster filter/sfx, bit 6: scream tracker 3 volume slides
-                     , trackerVersion   :: Word16    -- ^ upper four bits: tracker id, lower 12 bits: version
-                     , sampleSignedness :: Word16    -- ^ 1: signed, 2: unsigned
-                     , magicString     :: Word32     -- ^ \"SCRM\"
-                     , globalVolume    :: Word8      -- ^ global volume
-                     , initialSpeed    :: Word8      -- ^ frames per row
-                     , initialTempo    :: Word8      -- ^ frames per second
-                     , mixVolume       :: Word8      -- ^ bit 7: 1=stereo, 0=mono
-                                                     -- 
-                                                     --   bits 6-0: volume
-                     , clickRemoval    :: Word8      -- ^ number of channels to use for click removal on real GUS hardware
-                     , defaultPanFlag  :: Word8      -- ^ if 252: read panning values
-                     , hpad2           :: [Word8]    -- ^ padding (8 bytes)
-                     , special         :: Word16     -- ^ unused
-                     , channelSettings :: [Word8]    -- ^ channel settings (32 bytes/channels)
+data Header = Header { songName         :: [Word8]    -- ^ song name (28 bytes)
+                     , hpad0            :: Word8      -- ^ should be 0x1a for scream tracker 3 modules
+                     , magicByte        :: Word8      -- ^ should be 0x10 for scream tracker 3 modules
+                     , hpad1            :: Word16     -- ^ padding
+                     , songLength       :: Word16     -- ^ number of entries in pattern order table
+                     , numInstruments   :: Word16     -- ^ number of instruments
+                     , numPatterns      :: Word16     -- ^ number of patterns
+                     , flags            :: Word16     -- ^ bit 0: scream tracker 2 vibrato, bit 1: scream tracker 2 tempo,
+                                                      --   bit 2: amiga slides, bit 3: turn of looping notes when volume is zero for more than two rows,
+                                                      --   bit 4: amiga limits, bit 5: soundblaster filter/sfx, bit 6: scream tracker 3 volume slides
+                     , trackerVersion   :: Word16     -- ^ upper four bits: tracker id, lower 12 bits: version
+                     , sampleSignedness :: Word16     -- ^ 1: signed, 2: unsigned
+                     , magicString      :: Word32     -- ^ \"SCRM\"
+                     , globalVolume     :: Word8      -- ^ global volume
+                     , initialSpeed     :: Word8      -- ^ frames per row
+                     , initialTempo     :: Word8      -- ^ frames per second
+                     , mixVolume        :: Word8      -- ^ bit 7: 1=stereo, 0=mono
+                                                      -- 
+                                                      --   bits 6-0: volume
+                     , clickRemoval     :: Word8      -- ^ number of channels to use for click removal on real GUS hardware
+                     , defaultPanFlag   :: Word8      -- ^ if 252: read panning values
+                     , hpad2            :: [Word8]    -- ^ padding (8 bytes)
+                     , special          :: Word16     -- ^ unused
+                     , channelSettings  :: [Word8]    -- ^ channel settings (32 bytes/channels)
                      }
     deriving (Show, Eq)
 
