@@ -61,17 +61,17 @@ getExtendedInstrumentHeader = ExtendedInstrumentHeader <$> getWord32le <*> repli
 -- | Read an `Instrument` from the monad state.
 getInstrument :: Get Instrument
 getInstrument = label "XM.Instrument" $ do
-     headerStart <- bytesRead
-     instrumentSize <- getWord32le
-     instrumentName <- replicateM 22 getWord8
-     instrumentType <- getWord8
-     sampleNum <- getWord16le
-     extendedHeader <- sequence $ if sampleNum > 0 then Just getExtendedInstrumentHeader else Nothing
-     headerEnd <- bytesRead
-     skip $ fromIntegral instrumentSize + fromIntegral headerStart - fromIntegral headerEnd
-     sampleHeaders <- replicateM (fromIntegral sampleNum) getSampleHeader
-     samples <- mapM getSample sampleHeaders
-     return Instrument{..}
+    headerStart <- bytesRead
+    instrumentSize <- getWord32le
+    instrumentName <- replicateM 22 getWord8
+    instrumentType <- getWord8
+    sampleNum <- getWord16le
+    extendedHeader <- sequence $ if sampleNum > 0 then Just getExtendedInstrumentHeader else Nothing
+    headerEnd <- bytesRead
+    skip $ fromIntegral instrumentSize + fromIntegral headerStart - fromIntegral headerEnd
+    sampleHeaders <- replicateM (fromIntegral sampleNum) getSampleHeader
+    samples <- mapM getSample sampleHeaders
+    return Instrument{..}
 
 -- | Read the sample data for a `SampleHeader` and return a pair.
 getSample :: SampleHeader -> Get (SampleHeader, [Word8])
@@ -84,5 +84,20 @@ putInstrument Instrument{..} = do
     mapM_ putWord8 instrumentName
     putWord8 instrumentType
     putWord16le sampleNum
--- TODO
+    mapM_ putExtendedInstrumentHeader extendedHeader 
+    mapM_ (putSampleHeader . fst) samples
+    mapM_ (mapM_ putWord8 . snd) samples
+
+-- | Write an `ExtendedInstrumentHeader` to the buffer.
+putExtendedInstrumentHeader :: ExtendedInstrumentHeader -> Put
+putExtendedInstrumentHeader ExtendedInstrumentHeader{..} = do
+    putWord32le sampleHeaderSize
+    mapM_ putWord8 keymap
+    mapM_ putWord8 volumeEnvelope
+    mapM_ putWord8 panningEnvelope
+    mapM_ putWord8 [ volNumNodes, panNumNodes, panSustainNode, volLoopStart
+                   , volLoopEnd, panSustainPoint, panLoopStart, panLoopEnd
+                   , volumeType, panningType, vibratoType, vibratoSweep
+                   , vibratoDepth, vibratoRate ]
+    mapM_ putWord16le [ volumeFadeOut, reserved ]
 
