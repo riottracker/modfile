@@ -7,6 +7,8 @@ module Codec.Tracker.XM.Pattern (
     , Note (..)
     , getPattern
     , putPattern
+    , getCell
+    , putCell
     ) where
 
 import           Control.Applicative ((<$>))
@@ -70,7 +72,9 @@ getCell = getWord8 >>=
 
 -- | Write a `Cell` to the buffer.
 putCell :: Cell -> Put
-putCell (Cell (Just n) Nothing Nothing Nothing Nothing) = putWord8 (toEnum . fromEnum $ n)
+putCell (Cell (Just n)
+     (Just i) (Just v)
+     (Just t) (Just p)) = mapM_ putWord8 [ (toEnum . fromEnum $ n), i, v, t, p ]
 putCell Cell{..} = do
     putWord8 $ mask effectParam 4
              $ mask effectType  3

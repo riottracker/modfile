@@ -12,6 +12,7 @@ import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
+import           Data.Maybe
 
 import           Codec.Tracker.XM.SampleHeader
 
@@ -84,7 +85,8 @@ putInstrument Instrument{..} = do
     mapM_ putWord8 instrumentName
     putWord8 instrumentType
     putWord16le sampleNum
-    mapM_ putExtendedInstrumentHeader extendedHeader 
+    mapM_ putExtendedInstrumentHeader extendedHeader
+    mapM_ putWord8 $ replicate (fromIntegral instrumentSize - 29 - (if isJust extendedHeader then 214 else 0)) 0
     mapM_ (putSampleHeader . fst) samples
     mapM_ (mapM_ putWord8 . snd) samples
 

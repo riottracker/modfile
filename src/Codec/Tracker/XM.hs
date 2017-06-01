@@ -39,6 +39,7 @@ putModule :: Module -> Put
 putModule Module{..} = do
     putHeader header
     mapM_ putWord8 orders
+    mapM_ putWord8 (replicate (fromIntegral (headerSize header) - 20 - (length orders)) 0)
     mapM_ putPattern patterns
     mapM_ putInstrument instruments
 
