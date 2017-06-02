@@ -23,9 +23,6 @@ import           Util
 -- | An ImpulseTracker module
 data Module = Module { header        :: Header
                      , orders        :: [Word8]
-                     , insOffsets    :: [Word32]
-                     , smpOffsets    :: [Word32]
-                     , patOffsets    :: [Word32]
                      , message       :: [Word8]
                      , instruments   :: [Instrument]
                      , sampleHeaders :: [SampleHeader]
@@ -56,10 +53,14 @@ putModule :: Module -> Put
 putModule Module{..} = do
     putHeader header
     mapM_ putWord8 orders
-    mapM_ putWord32le insOffsets
-    mapM_ putWord32le smpOffsets
-    mapM_ putWord32le patOffsets
---    mapM_ putInstrument instruments
---    mapM_ putSampleHeader sampleHeaders
---    mapM_ putPattern patterns
+    let body = 192 + length orders + 4 * (length instruments + length sampleHeaders + length patterns)
+        ins  = 550 * (length instruments - 1)
+        samp = 80 * (length sampleHeaders - 1)
+    mapM_ (putWord32le . fromIntegral) [ length message + body + i * 550 | i <- [0..length instruments - 1]]
+    mapM_ (putWord32le . fromIntegral) [ length message + body + ins + s * 80 | s <- [0..length sampleHeaders - 1]]
+    mapM_ (putWord32le . fromIntegral) $ scanl (\x y -> x + (fromIntegral $ patternLength y)) 0 patterns
+    mapM_ putWord8 message
+    mapM_ putInstrument instruments
+    mapM_ putSampleHeader sampleHeaders
+    mapM_ putPattern patterns
 
