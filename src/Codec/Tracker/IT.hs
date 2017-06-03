@@ -54,11 +54,11 @@ putModule Module{..} = do
     putHeader header
     mapM_ putWord8 orders
     let body = 192 + length orders + 4 * (length instruments + length sampleHeaders + length patterns)
-        ins  = 550 * (length instruments - 1)
-        samp = 80 * (length sampleHeaders - 1)
+        ins  = 550 * length instruments
+        samp = 80 * length sampleHeaders
     mapM_ (putWord32le . fromIntegral) [ length message + body + i * 550 | i <- [0..length instruments - 1]]
     mapM_ (putWord32le . fromIntegral) [ length message + body + ins + s * 80 | s <- [0..length sampleHeaders - 1]]
-    mapM_ (putWord32le . fromIntegral) $ scanl (\x y -> x + (fromIntegral $ patternLength y)) 0 patterns
+    mapM_ (putWord32le . fromIntegral) $ scanl (\x y -> x + (fromIntegral $ patternLength y)) (body + ins + samp) patterns
     mapM_ putWord8 message
     mapM_ putInstrument instruments
     mapM_ putSampleHeader sampleHeaders

@@ -12,6 +12,8 @@ import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
 
+import           Data.Maybe
+
 import           Codec.Tracker.S3M.Header
 import           Codec.Tracker.S3M.Instrument
 import           Codec.Tracker.S3M.Pattern
@@ -21,8 +23,6 @@ import           Util
 -- | A Scream Tracker 3 module
 data Module = Module { header      :: Header
                      , orders      :: [Word8]
-                     , insOffsets  :: [Word16]
-                     , patOffsets  :: [Word16]
                      , panning     :: [Word8]
                      , instruments :: [Instrument]
                      , patterns    :: [Pattern]
@@ -46,7 +46,10 @@ putModule :: Module -> Put
 putModule Module{..} = do
     putHeader header
     mapM_ putWord8 orders
-    mapM_ putWord16le insOffsets
-    mapM_ putWord16le patOffsets
-    fail "todo: write instruments and patterns"
-
+    let body = 96 + length orders + 2 * (length instruments + length patterns) + length panning
+    mapM_ (putWord16le . fromIntegral) [ body + i * 80 | i <- [0..length instruments - 1]]
+    mapM_ (putWord16le . fromIntegral) $ scanl (\x y -> x + (fromIntegral $ packedLength y)) (body + 80 * length instruments) patterns
+    mapM_ putWord8 panning
+    mapM_ putInstrument instruments
+    mapM_ putPattern patterns
+  where insSize Instrument{..} = 13 + (if isJust pcmSample then 67 else 0) + (if isJust adlibSample then 67 else 0)

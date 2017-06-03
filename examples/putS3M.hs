@@ -36,8 +36,6 @@ exampleHeader = H.Header { H.songName   = (toEnum . fromEnum) <$> "Test"
 exampleSong :: Module
 exampleSong = Module { header      = exampleHeader
                      , orders      = [0]
-                     , insOffsets  = [0]
-                     , patOffsets  = [0]
                      , panning     = replicate 32 0
                      , instruments = []
                      , patterns    = []
