@@ -33,11 +33,11 @@ getInstrument = label "S3M.Instrument" $ do
      return Instrument{..}
 
 -- | Write an `Instrument` to the buffer.
-putInstrument :: Instrument -> Put
-putInstrument Instrument{..} = do
+putInstrument :: Int -> Instrument -> Put
+putInstrument ptr Instrument{..} = do
      putWord8 instrumentType
      mapM_ putWord8 fileName
-     forM_ pcmSample putPCMSample
+     forM_ pcmSample $ putPCMSample ptr
      forM_ adlibSample putAdlibSample
 
 

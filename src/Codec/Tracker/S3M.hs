@@ -16,6 +16,7 @@ import           Data.Maybe
 
 import           Codec.Tracker.S3M.Header
 import           Codec.Tracker.S3M.Instrument
+import           Codec.Tracker.S3M.Instrument.PCM
 import           Codec.Tracker.S3M.Pattern
 
 import           Util
@@ -31,25 +32,30 @@ data Module = Module { header      :: Header
 
 -- | Read a `Module` from the monad state.
 getModule :: Get Module
-getModule = do
+getModule = label "S3M" $ do
     header <- getHeader
-    orders <- replicateM (fromIntegral (songLength header)) getWord8
-    insOffsets <- replicateM (fromIntegral (numInstruments header)) getWord16le
-    patOffsets <- replicateM (fromIntegral (numPatterns header)) getWord16le
-    panning <- if defaultPanFlag header == 252 then replicateM 32 getWord8 else return []
-    instruments <- mapM (getAtOffset getInstrument . (16*)) insOffsets
-    patterns <- mapM (getAtOffset getPattern . (16*)) patOffsets
+    orders <- label "orders" $ replicateM (fromIntegral (songLength header)) getWord8
+    insOffsets <- label "insOffsets" $ replicateM (fromIntegral (numInstruments header)) getWord16le
+    patOffsets <- label "patOffsetS" $  replicateM (fromIntegral (numPatterns header)) getWord16le
+    panning <- label "panning" $ if defaultPanFlag header == 252 then replicateM 32 getWord8 else return []
+    instruments <- label "instrumentS" $ mapM (getAtOffset getInstrument . (16*)) insOffsets
+    patterns <- label "patterns" $ mapM (getAtOffset getPattern . (16*)) patOffsets
     return Module{..}
 
 -- | Write a `Module` to the buffer.
 putModule :: Module -> Put
 putModule Module{..} = do
-    putHeader header
-    mapM_ putWord8 orders
-    let body = 96 + length orders + 2 * (length instruments + length patterns) + length panning
-    mapM_ (putWord16le . fromIntegral) [ body + i * 80 | i <- [0..length instruments - 1]]
-    mapM_ (putWord16le . fromIntegral) $ scanl (\x y -> x + (fromIntegral $ packedLength y)) (body + 80 * length instruments) patterns
+    putHeader header -- 96 bytes
+    mapM_ putWord8 orders -- length orders bytes
+    mapM_ (putWord16le . fromIntegral) [ pBody + i * 5 | i <- [0..length instruments - 1]]
+    mapM_ (putWord16le . fromIntegral) $ init pPtrs
     mapM_ putWord8 panning
-    mapM_ putInstrument instruments
-    mapM_ putPattern patterns
-  where insSize Instrument{..} = 13 + (if isJust pcmSample then 67 else 0) + (if isJust adlibSample then 67 else 0)
+    mapM_ putWord8 $ replicate ((body `rem` 16) + 4) 0
+    mapM_ (uncurry putInstrument) $ zip (scanl (+) (16 * (1 + last pPtrs)) (samSize <$> instruments)) instruments
+    mapM_ (\p -> putPattern p >> (mapM_ putWord8 $ replicate (16 - ((packedSize p) `rem` 16)) 0)) patterns
+    mapM_ (mapM_ putWord8 . maybe ([]) sampleData . pcmSample) instruments
+  where samSize Instrument{..} = maybe 0 (length . sampleData) pcmSample
+        body = 96 + length orders + 2 * (length instruments + length patterns) + length panning
+        pBody = body `div` 16 + if body `rem` 16 > 0 then 1 else 0
+        pPtrs = scanl (\x y -> x + (packedSize y) `div` 16 + (if (packedSize y) `rem` 16 > 0 then 1 else 0)) (pBody + 5 * length instruments) patterns
+

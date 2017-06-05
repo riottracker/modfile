@@ -7,6 +7,7 @@ module Codec.Tracker.S3M.Pattern (
     , Cell (..)
     , Note (..)
     , channel
+    , packedSize
     , emptyCell
     , getPattern
     , putPattern
@@ -18,6 +19,7 @@ import           Data.Binary
 import           Data.Binary.Get
 import           Data.Binary.Put
 import           Data.Bits
+import           Data.Maybe
 import           Text.Printf
 
 import           Codec.Tracker.Common
@@ -53,10 +55,13 @@ instance Show Cell where
 channel :: Cell -> Word8
 channel = flip (foldl clearBit . mask) [5..7]
 
+packedSize :: Pattern -> Int
+packedSize (Pattern rows) = 2 + length rows + sum (fmap (foldr ((+) . cellSize) 0) rows)
+  where cellSize Cell{..} = 1 + wj note 1 + wj instrument 1 + wj volume 1 + wj command 2
+        wj x n = if isJust x then n else 0
+
 -- | Scream Tracker 3 pattern
-data Pattern = Pattern { packedLength  :: Word16
-                       , rows          :: [[Cell]]
-                       }
+data Pattern = Pattern { rows :: [[Cell]] }
                    deriving (Show, Eq)
 
 -- | Effect command type
@@ -108,9 +113,8 @@ putCell (Just Cell{..}) = putWord8 mask
 -- | Read a `Pattern` from the monad state.
 getPattern :: Get Pattern
 getPattern = label "S3M.Pattern" $ do
-    br0 <- bytesRead
-    packedLength <- lookAhead getWord16le
-    rows <- getToLimit getRow packedLength
+    packedLength <- getWord16le
+    rows <- getToLimit getRow (packedLength - 2)
     return Pattern{..}
 
 -- | Read a row (a list of `Cell`s) from the monad state.
@@ -123,5 +127,5 @@ putRow l = mapM_ (putCell . Just) l >> putCell Nothing
 
 -- | Write a `Pattern` to the buffer.
 putPattern :: Pattern -> Put
-putPattern Pattern{..} = putWord16le packedLength >> mapM_ putRow rows 
+putPattern Pattern{..} = putWord16le (fromIntegral $ packedSize Pattern{..}) >> mapM_ putRow rows 
 

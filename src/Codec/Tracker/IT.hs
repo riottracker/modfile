@@ -33,7 +33,7 @@ data Module = Module { header        :: Header
 
 -- | Read a `Module` from the monad state.
 getModule :: Get Module
-getModule = do
+getModule = label "IT" $ do
     header <- getHeader
     message <- getAtOffset (replicateM (fromIntegral $ messageLength header) getWord8) $ messageOffset header
     orders <- replicateM (fromIntegral (songLength header)) getWord8

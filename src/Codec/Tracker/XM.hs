@@ -25,7 +25,7 @@ data Module = Module { header      :: Header
 
 -- | Read a `Module` from the monad state.
 getModule :: Get Module
-getModule = do
+getModule = label "XM" $ do
     header <- getHeader
     orders <- replicateM (fromIntegral (songLength header)) getWord8
     br <- bytesRead

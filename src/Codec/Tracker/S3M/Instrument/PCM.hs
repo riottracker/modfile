@@ -15,9 +15,7 @@ import           Data.Bits
 
 
 -- | PCM sample
-data PCMSample = PCMSample { ptrDataH     :: Word8
-                           , ptrDataL     :: Word16
-                           , sampleLength :: Word32
+data PCMSample = PCMSample { sampleLength :: Word32
                            , loopStart    :: Word32
                            , loopEnd      :: Word32
                            , volume       :: Word8
@@ -54,15 +52,15 @@ getPCMSample = label "S3M.Instrument.PCM" $ do
      return PCMSample{..}
 
 -- | Write a `PCMSample` to the buffer.
-putPCMSample :: PCMSample -> Put
-putPCMSample PCMSample{..} = do
-     putWord8 ptrDataH
-     putWord16le ptrDataL
+putPCMSample :: Int -> PCMSample -> Put
+putPCMSample ptr PCMSample{..} = do
+     let ptrDataH = ptr `shiftR` 16
+         ptrDataL = ptr .|. (ptrDataH `shiftL` 16)
+     putWord8 $ fromIntegral ptrDataH
+     putWord16le $ fromIntegral ptrDataL
      mapM_ putWord32le [sampleLength, loopStart, loopEnd]
      mapM_ putWord8 [volume, ppad0, packed, flags]
      putWord32le c2spd
      mapM_ putWord8 (internal ++ title ++ sig)
-     fail "writing pcm sample data is not implemented (yet)"
--- TODO
 
 
