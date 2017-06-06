@@ -7,6 +7,7 @@ module Codec.Tracker.S3M.Instrument.PCM (
     , putPCMSample
     ) where
 
+
 import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
@@ -46,7 +47,7 @@ getPCMSample = label "S3M.Instrument.PCM" $ do
      internal <- replicateM 12 getWord8
      title <- replicateM 28 getWord8
      sig <- replicateM 4 getWord8
-     let offset = fromIntegral ptrDataL + (fromIntegral ptrDataH `shiftL` 16)
+     let offset = (fromIntegral ptrDataH `shiftL` 20) + (fromIntegral ptrDataL `shiftL` 4)
      br <- bytesRead
      sampleData <- lookAhead $ skip (offset - fromIntegral br) >> replicateM (fromIntegral sampleLength) getWord8
      return PCMSample{..}

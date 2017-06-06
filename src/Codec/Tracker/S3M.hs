@@ -34,12 +34,12 @@ data Module = Module { header      :: Header
 getModule :: Get Module
 getModule = label "S3M" $ do
     header <- getHeader
-    orders <- label "orders" $ replicateM (fromIntegral (songLength header)) getWord8
-    insOffsets <- label "insOffsets" $ replicateM (fromIntegral (numInstruments header)) getWord16le
-    patOffsets <- label "patOffsetS" $  replicateM (fromIntegral (numPatterns header)) getWord16le
-    panning <- label "panning" $ if defaultPanFlag header == 252 then replicateM 32 getWord8 else return []
-    instruments <- label "instrumentS" $ mapM (getAtOffset getInstrument . (16*)) insOffsets
-    patterns <- label "patterns" $ mapM (getAtOffset getPattern . (16*)) patOffsets
+    orders <- replicateM (fromIntegral (songLength header)) getWord8
+    insOffsets <- replicateM (fromIntegral (numInstruments header)) getWord16le
+    patOffsets <- replicateM (fromIntegral (numPatterns header)) getWord16le
+    panning <- if defaultPanFlag header == 252 then replicateM 32 getWord8 else return []
+    instruments <- mapM (getAtOffset getInstrument . (16*)) insOffsets
+    patterns <- mapM (getAtOffset getPattern . (16*)) patOffsets
     return Module{..}
 
 -- | Write a `Module` to the buffer.
@@ -51,7 +51,7 @@ putModule Module{..} = do
     mapM_ (putWord16le . fromIntegral) $ init pPtrs
     mapM_ putWord8 panning
     mapM_ putWord8 $ replicate ((body `rem` 16) + 4) 0
-    mapM_ (uncurry putInstrument) $ zip (scanl (+) (16 * (1 + last pPtrs)) (samSize <$> instruments)) instruments
+    mapM_ (uncurry putInstrument) $ zip (scanl (+) (1 + last pPtrs) (samSize <$> instruments)) instruments
     mapM_ (\p -> putPattern p >> (mapM_ putWord8 $ replicate (16 - ((packedSize p) `rem` 16)) 0)) patterns
     mapM_ (mapM_ putWord8 . maybe ([]) sampleData . pcmSample) instruments
   where samSize Instrument{..} = maybe 0 (length . sampleData) pcmSample
