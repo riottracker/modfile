@@ -50,10 +50,12 @@ putModule Module{..} = do
     mapM_ (putWord16le . fromIntegral) [ pBody + i * 5 | i <- [0..length instruments - 1]]
     mapM_ (putWord16le . fromIntegral) $ init pPtrs
     mapM_ putWord8 panning
-    mapM_ putWord8 $ replicate ((body `rem` 16) + 4) 0
-    mapM_ (uncurry putInstrument) $ zip (scanl (+) (1 + last pPtrs) (samSize <$> instruments)) instruments
+    mapM_ putWord8 $ replicate (16 - (body `rem` 16)) 0
+    mapM_ (uncurry putInstrument) $ zip (scanl (+) (1 + last pPtrs) ((\x -> 1 + x `div` 16) . samSize <$> instruments)) instruments
     mapM_ (\p -> putPattern p >> (mapM_ putWord8 $ replicate (16 - ((packedSize p) `rem` 16)) 0)) patterns
-    mapM_ (mapM_ putWord8 . maybe ([]) sampleData . pcmSample) instruments
+    mapM_ (\i -> 
+     maybe (return ()) ((\sd -> mapM_ putWord8 $ sd ++ (replicate (16 - ((length sd) `rem` 16)) 0)) . sampleData) (pcmSample i)
+     ) instruments
   where samSize Instrument{..} = maybe 0 (length . sampleData) pcmSample
         body = 96 + length orders + 2 * (length instruments + length patterns) + length panning
         pBody = body `div` 16 + if body `rem` 16 > 0 then 1 else 0

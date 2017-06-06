@@ -5,7 +5,6 @@ module Main (main) where
 import           Data.Binary.Get
 import qualified Data.ByteString.Lazy as BL
 import           Data.List
-import           Text.Printf
 
 import           Codec.Tracker.IT
 import           Codec.Tracker.IT.Header

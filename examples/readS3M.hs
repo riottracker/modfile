@@ -48,7 +48,7 @@ pprintHeader Header{..} = do
 
 pprintPattern :: Pattern -> IO ()
 pprintPattern Pattern{..} = do
-    putStrLn $ "Packed length: " ++ show packedLength
+    putStrLn $ "Packed length: " ++ show (packedSize Pattern{..})
     mapM_ putStrLn (map (foldr (++) ([])) (map (intersperse " | ") (map (map show) rows))) 
 
 main :: IO ()

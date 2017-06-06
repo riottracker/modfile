@@ -10,6 +10,8 @@ module Codec.Tracker.S3M.Instrument (
 import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
+import           Data.Binary.Put
+import           Data.Maybe
 
 import           Codec.Tracker.S3M.Instrument.Adlib
 import           Codec.Tracker.S3M.Instrument.PCM
@@ -37,6 +39,10 @@ putInstrument :: Int -> Instrument -> Put
 putInstrument ptr Instrument{..} = do
      putWord8 instrumentType
      mapM_ putWord8 fileName
+     _ <- if isNothing pcmSample && isNothing adlibSample then do
+            mapM_ putWord8 $ replicate 63 0 -- padding because of reasons
+            putWord32le 0x53524353
+          else return ()
      forM_ pcmSample $ putPCMSample ptr
      forM_ adlibSample putAdlibSample
 
