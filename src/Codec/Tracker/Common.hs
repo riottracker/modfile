@@ -34,7 +34,7 @@ data Note = Note Pitch | NoteCut | NoteOff | NoteFade
   deriving (Eq)
 
 instance Show Note where
-  show (Note (Pitch t o)) = printf "%2s%d" (show t) o
+  show (Note (Pitch t o)) = printf "%-2s%d" (show t) o
   show NoteCut            = "xxx"
   show NoteOff            = "###"
   show NoteFade           = "///"
